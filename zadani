@@ -1,0 +1,4 @@
+Vytvořte genealogický expertní systém. Vstupem bude informace databáze základních informací o
+osobě [id, jméno, matka, otec, pohlaví, partner]. Program bude umět odpovídat na otázky: Kdo je
+můj pokrevní příbuzný? Kolik má moje prateta sestřenic? Jaký je vtah mezi Petrem a Pavlem? ...
+a další podobné.
