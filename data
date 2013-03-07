@@ -1,0 +1,10 @@
+9
+[1, Kocourek Petr, 4, 3, true, nil]
+[2, Kocourková Lucie, 4, 3, false, nil]
+[3, Kocourek Michal, 5, 6, true, 4]
+[4, Kocourková Ivana, 8, 9, false, 3]
+[5, Kocourková Eva, nil, nil, false, 6]
+[6, Kocourek Tomáš, nil, nil, true, 5]
+[7, Mašek Jan, 8, 9, true, nil]
+[8, Mašková Marie, nil, nil, false, 9]
+[9, Mašek Ivan, nil, nil, true, 8]
