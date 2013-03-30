@@ -1,32 +1,33 @@
+/*
+ * Genealogy expert system.
+ * Semestral work for the University of West Bohemia.
+ * 
+ * Written by Zdeněk Janeček, 2013
+ * Share it freely under conditions of GNU GPL v3
+ */
+
 package kiv.janecekz;
 
 import java.util.Collection;
 import java.util.HashSet;
 
 public class Genealogy {
+    private final int GEN_ME = 9;
+    private final int GEN_BROTHER = 10;
+    private final int GEN_SISTER = 11;
+    private final int GEN_MOTHER = 12;
+    private final int GEN_FATHER = 13;
+    private final int GEN_GRAND_FATHER = 14;
+    private final int GEN_GRAND_MOTHER = 15;
+    
+    private NTree tree;
 
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-        NTree familyTree = new NTree();
-        
-        familyTree.processInput("data");
-        
-        System.out.println("\nSourozenci čísla 3:");
-        
-        for (Node person : listSiblings(familyTree.getId(1))) {
-            System.out.println(person.toString());
-        }
-        
-        System.out.println("\nPokrevní linie od 3:");
-        
-        for (Node person : listBlodLine(familyTree.getId(3))) {
-            System.out.println(person.toString());
-        }
+    public Genealogy(NTree tree) {
+        super();
+        this.tree = tree;
     }
 
-    public static Node[] listSiblings(Node person) {
+    public Node[] listSiblings(Node person) {
         HashSet<Node> res = new HashSet<Node>();
         for (Node node : person.getMother().listOfChilds()) {
             res.add(node);
@@ -41,7 +42,7 @@ public class Genealogy {
         return res.toArray(new Node[res.size()]);
     }
     
-    public static Collection<Node> listBlodLine(Node person) {
+    public Collection<Node> listBlodLine(Node person) {
         HashSet<Node> res = new HashSet<Node>();
         
         listAllChilds(person, res);
@@ -52,7 +53,7 @@ public class Genealogy {
         return res;
     }
     
-    public static void listAllChilds(Node person, HashSet<Node> set) {
+    public void listAllChilds(Node person, HashSet<Node> set) {
         Collection<Node> list = person.listOfChilds();
         
         if (list == null)
@@ -64,7 +65,7 @@ public class Genealogy {
         }
     }
     
-    public static void listAllParents(Node person, HashSet<Node> set) {
+    public void listAllParents(Node person, HashSet<Node> set) {
         if (person.getMother() != null) {
             set.add(person.getMother());
             listAllParents(person.getMother(), set);
@@ -74,5 +75,12 @@ public class Genealogy {
             set.add(person.getFather());
             listAllParents(person.getFather(), set);
         }
+    }
+    
+    public int getRelation(Node person, Node second) {
+        int state = GEN_ME;
+        
+        // TODO: nějaký stavový automat rozpoznávající stav mezi dvěma osobama.
+        return state;
     }
 }
