@@ -27,7 +27,7 @@ public class Genealogy {
         this.tree = tree;
     }
 
-    public Node[] listSiblings(Node person) {
+    public Collection<Node> listSiblings(Node person) {
         HashSet<Node> res = new HashSet<Node>();
         for (Node node : person.getMother().listOfChilds()) {
             res.add(node);
@@ -39,7 +39,7 @@ public class Genealogy {
         
         res.remove(person);
         
-        return res.toArray(new Node[res.size()]);
+        return res;
     }
     
     public Collection<Node> listBlodLine(Node person) {

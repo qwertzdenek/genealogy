@@ -15,7 +15,7 @@ import java.io.IOException;
 
 /**
  * Utility class for the tasks with the N-tree. Imports external data file and
- * prepares instances of the nods.
+ * prepares instances of the nodes.
  * 
  * @author Zdeněk Janeček
  */
