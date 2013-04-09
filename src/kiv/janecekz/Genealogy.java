@@ -8,79 +8,120 @@
 
 package kiv.janecekz;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 public class Genealogy {
-    private final int GEN_ME = 9;
-    private final int GEN_BROTHER = 10;
-    private final int GEN_SISTER = 11;
-    private final int GEN_MOTHER = 12;
-    private final int GEN_FATHER = 13;
-    private final int GEN_GRAND_FATHER = 14;
-    private final int GEN_GRAND_MOTHER = 15;
-    
     private NTree tree;
+    private Expert ex;
 
+    private class Question {
+        public String desc;
+        public String rule;
+        
+        public Question(String desc, String rule) {
+            this.desc = desc;
+            this.rule = rule;
+        }
+    }
+    
+    private Question[] questions;
+    
     public Genealogy(NTree tree) {
-        super();
         this.tree = tree;
+        
+        Expert ex = new Expert("expertData");
+        processInput("questions");
     }
+    
+    public String answer(Node osoba, String q) {
+        q = q.toLowerCase();
+        
+        for (Question oneq : questions) {
+            if (q.equals(oneq.desc)) {
+                System.out.print("Budu řešit: "+oneq.rule+" od osoby "+osoba.toString());
+            }
+        }
+        
+        return null;
+    }
+    
+    public void listChilds(Collection<Node> persons, Collection<Node> result) {
+        result.clear();
+        
+        if (result instanceof HashSet) {
+            for (Node p : persons) {
+                result.addAll(p.listOfChilds());
+            }
+        } else {
+            for (Node p : persons) {
+                for (Node c : p.listOfChilds()) {
+                    if (!result.contains(c))
+                        result.add(c);
+                }
+                
+            }
+        }
+    }
+    
+    public void listParents(Collection<Node> persons, Collection<Node> result) {
+        result.clear();
+        
+        if (result instanceof HashSet) {
+            for (Node p : persons) {
+                result.add(p.getFather());
+                result.add(p.getMother());
+            }
+        } else {
+            for (Node p : persons) {
+                if (!result.contains(p.getFather()))
+                    result.add(p.getFather());
+                if (!result.contains(p.getMother()))
+                    result.add(p.getMother());
+            }
+        }
+    }
+    
+    private boolean processInput(String file) {
+        BufferedReader input = null;
+        try {
+            input = new BufferedReader(new FileReader(file));
+        } catch (FileNotFoundException e) {
+            System.out.println("Soubor nenalezen!");
+            return false;
+        }
 
-    public Collection<Node> listSiblings(Node person) {
-        HashSet<Node> res = new HashSet<Node>();
-        for (Node node : person.getMother().listOfChilds()) {
-            res.add(node);
+        try {
+            String curLine;
+
+            // We add one virtual nod to save end of line.
+            int count = Integer.parseInt(input.readLine().trim());
+
+            // first line shows count of input data
+            questions = new Question[count];
+
+            for (int i = 0; i < count; i++) {
+                curLine = input.readLine();
+                String[] values = Starter.getTokens(curLine);
+                curLine = input.readLine();
+
+                Question oneq = new Question(values[0], curLine);
+                
+                oneq.rule = curLine.trim();
+                
+                questions[i] = oneq;
+            }
+
+            input.close();
+        } catch (IOException e) {
+            System.out.println("Chyba při čtení!");
         }
-        
-        for (Node node : person.getFather().listOfChilds()) {
-            res.add(node);
-        }
-        
-        res.remove(person);
-        
-        return res;
-    }
-    
-    public Collection<Node> listBlodLine(Node person) {
-        HashSet<Node> res = new HashSet<Node>();
-        
-        listAllChilds(person, res);
-        listAllParents(person, res);
-        
-        res.remove(person.getTree().getId(0));
-        
-        return res;
-    }
-    
-    public void listAllChilds(Node person, HashSet<Node> set) {
-        Collection<Node> list = person.listOfChilds();
-        
-        if (list == null)
-            return;
-        
-        set.addAll(list);
-        for (Node node : list) {
-            listAllChilds(node, set);
-        }
-    }
-    
-    public void listAllParents(Node person, HashSet<Node> set) {
-        if (person.getMother() != null) {
-            set.add(person.getMother());
-            listAllParents(person.getMother(), set);
-        }
-        
-        if (person.getFather() != null) {
-            set.add(person.getFather());
-            listAllParents(person.getFather(), set);
-        }
-    }
-    
-    public int getRelation(Node person, Node second) {
-        int state = GEN_ME;
-        
-        // TODO: nějaký stavový automat rozpoznávající stav mezi dvěma osobama.
-        return state;
+
+        return true;
     }
 }

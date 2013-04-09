@@ -8,24 +8,41 @@
 
 package kiv.janecekz;
 
+import java.util.LinkedList;
+
 public class Starter {
     public static void main(String[] args) {
-        NTree familyTree = new NTree();
-        
+        NTree familyTree = new NTree("familyData");
         Genealogy gen = new Genealogy(familyTree);
-        
-        familyTree.processInput("data");
-        
-        System.out.println("\nSourozenci čísla 3:");
-        
-        for (Node person : gen.listSiblings(familyTree.getId(1))) {
-            System.out.println(person.toString());
+
+        gen.answer(familyTree.getId(1), "Moje matka");
+    }
+    
+    /**
+     * For example [aa,bb,cc] returns {"aa", "bb", "cc"}
+     * @param s String to tokenize
+     * @return array with result
+     */
+    public static String[] getTokens(String s) {
+        int spos = 0;
+        int endPos = 0;
+
+        LinkedList<String> list = new LinkedList<String>();
+
+        for (int i = 1; i < s.length() - 1; i++) {
+            spos = endPos + 1;
+
+            for (; i < s.length() - 1; i++) {
+                if ((s.charAt(i) == ',')) {
+                    break;
+                }
+            }
+
+            endPos = i;
+
+            list.add(s.substring(spos, endPos).trim());
         }
         
-        System.out.println("\nPokrevní linie od 3:");
-        
-        for (Node person : gen.listBlodLine(familyTree.getId(3))) {
-            System.out.println(person.toString());
-        }
+        return list.toArray(new String[list.size()]);
     }
 }

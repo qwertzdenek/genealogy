@@ -29,12 +29,19 @@ public class NTree {
 
     private Node[] instances;
 
-    public boolean processInput(String file) {
+    public NTree(String file) {
+        boolean res = processInput(file);
+        
+        if (!res)
+            System.out.println("Došlo k chybě při čtení souboru "+file);
+    }
+    
+    private boolean processInput(String file) {
         BufferedReader input = null;
         try {
             input = new BufferedReader(new FileReader(file));
         } catch (FileNotFoundException e) {
-            System.out.println("File not found!");
+            System.out.println("Soubor nenalezen!");
             return false;
         }
 
@@ -68,6 +75,7 @@ public class NTree {
             e.printStackTrace();
         }
 
+        /*
         System.out.println("Načteno: ");
         for (Node nod : instances) {
             System.out.println(nod.toString());
@@ -77,7 +85,7 @@ public class NTree {
         for (Node nod : instances[0].listOfChilds()) {
             System.out.println(nod.toString());
         }
-
+         */
         return true;
     }
 
@@ -105,25 +113,7 @@ public class NTree {
         boolean male;
         Node partner = null;
 
-        String[] tokens = new String[6];
-
-        int tokenNum = 0;
-        int spos = 0;
-        int endPos = 0;
-
-        for (int i = 1; i < s.length() - 1; i++) {
-            spos = endPos + 1;
-
-            for (; i < s.length() - 1; i++) {
-                if ((s.charAt(i) == ',')) {
-                    break;
-                }
-            }
-
-            endPos = i;
-
-            tokens[tokenNum++] = s.substring(spos, endPos).trim();
-        }
+        String[] tokens = Starter.getTokens(s);
 
         male = Boolean.parseBoolean(tokens[POS_MALE]);
         name = tokens[POS_NAME];

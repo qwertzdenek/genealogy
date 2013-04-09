@@ -96,6 +96,50 @@ public class Node {
         return "Man [id=" + id + ", name=" + name + ", male=" + male + "]";
     }
 
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((father == null) ? 0 : father.hashCode());
+        result = prime * result + id;
+        result = prime * result + (male ? 1231 : 1237);
+        result = prime * result + ((mother == null) ? 0 : mother.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Node other = (Node) obj;
+        if (father == null) {
+            if (other.father != null)
+                return false;
+        } else if (!father.equals(other.father))
+            return false;
+        if (id != other.id)
+            return false;
+        if (male != other.male)
+            return false;
+        if (mother == null) {
+            if (other.mother != null)
+                return false;
+        } else if (!mother.equals(other.mother))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        return true;
+    }
+
     public void addChild(int id) {
         if (childrens == null)
             childrens = new boolean[tree.size()];

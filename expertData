@@ -1,0 +1,15 @@
+7
+[0,dítě,syn,dcera]
+C
+[1,rodič,otec,matka]
+P
+[2,sourozenec,bratr,sestra]
+PC
+[3,prarodič,dědeček,babička]
+PP
+[4,sourozenec rodičů,strýc,teta]
+PPC
+[5,potomek sourozenců rodičů,bratranec,sestřenice]
+PPCC
+[6,dítě mých dětí,vnuk,vnučka]
+CC
