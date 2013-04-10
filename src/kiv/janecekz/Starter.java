@@ -13,9 +13,10 @@ import java.util.LinkedList;
 public class Starter {
     public static void main(String[] args) {
         NTree familyTree = new NTree("familyData");
-        Genealogy gen = new Genealogy(familyTree);
+        Genealogy gen = new Genealogy();
 
-        gen.answer(familyTree.getId(1), "Moje matka");
+        gen.setMe(familyTree.getId(4));
+        gen.answer(familyTree.getId(1), "můj potomek");
     }
     
     /**

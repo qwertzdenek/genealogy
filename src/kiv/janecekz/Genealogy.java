@@ -14,11 +14,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 
 public class Genealogy {
-    private NTree tree;
     private Expert ex;
+    
+    private Node me;
 
     private class Question {
         public String desc;
@@ -32,21 +32,41 @@ public class Genealogy {
     
     private Question[] questions;
     
-    public Genealogy(NTree tree) {
-        this.tree = tree;
-        
-        Expert ex = new Expert("expertData");
+    public Genealogy() {
+        ex = new Expert("expertData");
         processInput("questions");
     }
     
-    public String answer(Node osoba, String q) {
+    public String answer(Node person, String q) {
         q = q.toLowerCase();
         
+        String rule = null;
         for (Question oneq : questions) {
             if (q.equals(oneq.desc)) {
-                System.out.print("Budu řešit: "+oneq.rule+" od osoby "+osoba.toString());
+                System.out.println("Budu řešit: "+oneq.rule+" od osoby "+me.toString());
+                rule = oneq.rule;
             }
         }
+        
+        String val = ex.getRelationInfo(Integer.parseInt(rule))[Expert.POS_RULE];
+        
+        boolean testRelVal = true;
+        int symIt = 0;
+        
+        while (testRelVal && symIt >= val.length()) {
+            switch (val.charAt(symIt++)) {
+            case 'P':
+                testRelVal &= ex.isParentOf(me, person);
+                break;
+            case 'C':
+                testRelVal &= ex.isChildrenOf(person, me);
+                break;
+            default:
+                break;
+            }
+        }
+        
+        System.out.println(testRelVal);
         
         return null;
     }
@@ -123,5 +143,9 @@ public class Genealogy {
         }
 
         return true;
+    }
+    
+    public void setMe(Node me) {
+        this.me = me;
     }
 }
