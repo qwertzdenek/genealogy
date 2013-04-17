@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collection;
 
 public class Expert {
     public static final int POS_ID = 0;
@@ -49,13 +50,21 @@ public class Expert {
      * Function for Predicate logic expression
      * 
      * @param a
-     *            Parent node
+     *            Parent nodes
      * @param b
-     *            child node
-     * @return true if is a parent of b
+     *            child nodes
+     * @return true if there is a parent of one of b
      */
-    public boolean isParentOf(Node a, Node b) {
-        return a.listOfChilds().contains(b);
+    public boolean isParentOf(Collection<Node> a, Collection<Node> b) {
+        boolean res = false;
+        
+        for (Node os : b) {
+            for (Node rod : a) {
+                res |= os.getFather().equals(a) || os.getMother().equals(a);
+            }
+        }
+        
+        return res;
     }
 
     /**
@@ -67,8 +76,10 @@ public class Expert {
      *            parent node
      * @return true if is a children of b
      */
-    public boolean isChildrenOf(Node a, Node b) {
-        return a.getFather().equals(b) || a.getMother().equals(b);
+    public boolean isChildrenOf(Collection<Node> a, Collection<Node> b) {
+        boolean res = false;
+        
+        return res;
     }
 
     public String[] getRelationInfo(int id) {

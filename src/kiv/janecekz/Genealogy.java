@@ -14,6 +14,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 public class Genealogy {
     private Expert ex;
@@ -53,17 +54,26 @@ public class Genealogy {
         boolean testRelVal = true;
         int symIt = 0;
         
+        LinkedList<Node> act = new LinkedList<Node>();
+        LinkedList<Node> res = new LinkedList<Node>();
+        act.add(me);
+        
         while (testRelVal && symIt >= val.length()) {
             switch (val.charAt(symIt++)) {
             case 'P':
-                testRelVal &= ex.isParentOf(me, person);
+                listParents(act, res);
+                testRelVal &= ex.isParentOf(act, res);
                 break;
             case 'C':
-                testRelVal &= ex.isChildrenOf(person, me);
+                listChilds(act, res);
+                testRelVal &= ex.isChildrenOf(act, res);
                 break;
             default:
                 break;
             }
+            
+            if (act.contains(person))
+                break;
         }
         
         System.out.println(testRelVal);
@@ -71,7 +81,7 @@ public class Genealogy {
         return null;
     }
     
-    public void listChilds(Collection<Node> persons, Collection<Node> result) {
+    public Collection<Node> listChilds(Collection<Node> persons, Collection<Node> result) {
         result.clear();
         
         if (result instanceof HashSet) {
@@ -87,9 +97,11 @@ public class Genealogy {
                 
             }
         }
+        
+        return result;
     }
     
-    public void listParents(Collection<Node> persons, Collection<Node> result) {
+    public Collection<Node> listParents(Collection<Node> persons, Collection<Node> result) {
         result.clear();
         
         if (result instanceof HashSet) {
@@ -105,6 +117,8 @@ public class Genealogy {
                     result.add(p.getMother());
             }
         }
+        
+        return result;
     }
     
     private boolean processInput(String file) {
