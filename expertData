@@ -4,12 +4,12 @@ C
 [1,rodič,otec,matka]
 P
 [2,sourozenec,bratr,sestra]
-PC
+PCN
 [3,prarodič,dědeček,babička]
 PP
 [4,sourozenec rodičů,strýc,teta]
-PPC
+PPCN
 [5,potomek sourozenců rodičů,bratranec,sestřenice]
-PPCC
+PPCNC
 [6,dítě mých dětí,vnuk,vnučka]
 CC

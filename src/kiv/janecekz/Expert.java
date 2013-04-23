@@ -13,6 +13,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 public class Expert {
     public static final int POS_ID = 0;
@@ -47,41 +49,59 @@ public class Expert {
     }
 
     /**
-     * Function for Predicate logic expression
+     * Function for Predicate logic expression. Method fills {@code b} with childrens
+     * of all elements of {@code a}.
      * 
-     * @param a
-     *            Parent nodes
-     * @param b
-     *            child nodes
-     * @return true if there is a parent of one of b
+     * @param a parent nodes
+     * @param b child nodes
      */
-    public boolean isParentOf(Collection<Node> a, Collection<Node> b) {
-        boolean res = false;
+    public void parentOf(Collection<Node> a, Collection<Node> b) {
+        if (!(b instanceof HashSet))
+            b = new HashSet<Node>();
+
+        b.clear();
         
-        for (Node os : b) {
-            for (Node rod : a) {
-                res |= os.getFather().equals(a) || os.getMother().equals(a);
-            }
+        for (Node node : a) {
+            b.add(node.getFather());
+            b.add(node.getMother());
         }
-        
-        return res;
     }
 
     /**
-     * Function for Predicate logic expression
+     * Function for Predicate logic expression. Method fills {@code b} with parents
+     * of all elements of {@code a}.
      * 
-     * @param a
-     *            children node
-     * @param b
-     *            parent node
-     * @return true if is a children of b
+     * @param a children nodes
+     * @param b parent nodes
      */
-    public boolean isChildrenOf(Collection<Node> a, Collection<Node> b) {
-        boolean res = false;
+    public void childrenOf(Collection<Node> a, Collection<Node> b) {
+        if (!(b instanceof HashSet))
+            b = new HashSet<Node>();
+
+        b.clear();
         
-        return res;
+        for (Node node : a) {
+            b.addAll(node.listOfChilds());
+        }
     }
 
+    /**
+     * Function for Predicate logic expression. Method fills b with
+     * all objects that are in {@code a} but without objects in {@code b}.
+     * 
+     * @param a source nodes
+     * @param b nodes to exclude from a
+     */
+    public void notThis(Collection<Node> a, Collection<Node> b) {
+        Collection<Node> toDelete = new LinkedList<Node>();
+        toDelete.addAll(b);
+        b.clear();
+        for (Node node : a) {
+            if (!(toDelete.contains(node)))
+                b.add(node);
+        }
+    }
+    
     public String[] getRelationInfo(int id) {
         String[] result = new String[5];
         result[POS_ID] = Integer.toString(id);

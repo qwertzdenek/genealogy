@@ -15,8 +15,8 @@ public class Starter {
         NTree familyTree = new NTree("familyData");
         Genealogy gen = new Genealogy();
 
-        gen.setMe(familyTree.getId(4));
-        gen.answer(familyTree.getId(1), "můj potomek");
+        gen.setMe(familyTree.getId(1));
+        gen.answer(familyTree.getId(2), "moje sestra");
     }
     
     /**

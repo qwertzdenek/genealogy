@@ -14,7 +14,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 
 public class Genealogy {
     private Expert ex;
@@ -51,32 +50,36 @@ public class Genealogy {
         
         String val = ex.getRelationInfo(Integer.parseInt(rule))[Expert.POS_RULE];
         
-        boolean testRelVal = true;
-        int symIt = 0;
+        HashSet<Node> first = new HashSet<Node>();
+        HashSet<Node> second = new HashSet<Node>();
+        first.add(me);
         
-        LinkedList<Node> act = new LinkedList<Node>();
-        LinkedList<Node> res = new LinkedList<Node>();
-        act.add(me);
-        
-        while (testRelVal && symIt >= val.length()) {
-            switch (val.charAt(symIt++)) {
+        for (int symIt = 0; symIt < val.length(); symIt++) {
+            switch (val.charAt(symIt)) {
             case 'P':
-                listParents(act, res);
-                testRelVal &= ex.isParentOf(act, res);
+                ex.parentOf(first, second);
                 break;
             case 'C':
-                listChilds(act, res);
-                testRelVal &= ex.isChildrenOf(act, res);
+                ex.childrenOf(first, second);
+                break;
+            case 'N':
+                // FIX: What if I want to exclude somthing else?
+                second.clear();
+                second.add(me);
+                ex.notThis(first, second);
                 break;
             default:
                 break;
             }
             
-            if (act.contains(person))
-                break;
+            Collection<Node> tmp = null;
+            
+            tmp = first;
+            first = second;
+            second = (HashSet<Node>) tmp;
         }
         
-        System.out.println(testRelVal);
+        System.out.println(first.contains(person));
         
         return null;
     }
