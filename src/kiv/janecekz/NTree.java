@@ -90,7 +90,10 @@ public class NTree {
     }
 
     public Node getId(int id) {
-        return instances[id];
+        if (id >= 0 && id < instances.length)
+            return instances[id];
+        else
+            return null;
     }
 
     public int size() {
@@ -167,11 +170,7 @@ public class NTree {
             instances[id] = newNod;
         } else {
             newNod = instances[id];
-            if (newNod.updateInfo(name, mother, father, partner)) {
-                System.out.println("id: " + id + " updated succesfully");
-            } else {
-                System.out.println("id: " + id + " is already initialized");
-            }
+            newNod.updateInfo(name, mother, father, partner);
         }
 
         return newNod;

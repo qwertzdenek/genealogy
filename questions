@@ -1,9 +1,17 @@
-4
-[můj potomek]
-0
-[můj rodič]
-1
+8
+[můj syn]
+im0
+[moje dcera]
+if0
+[můj otec]
+im1
+[moje matka]
+if1
 [moje sestra]
-2
+if2
 [můj bratr]
-2
+im2
+[babička]
+if3
+[stav]
+f

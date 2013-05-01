@@ -93,9 +93,8 @@ public class Node {
 
     @Override
     public String toString() {
-        return "Man [id=" + id + ", name=" + name + ", male=" + male + "]";
+        return (male ? "Muž" : "Žena") + " [id=" + id + ", jméno=" + name + "]";
     }
-
 
     @Override
     public int hashCode() {
@@ -153,7 +152,7 @@ public class Node {
     
     public Collection<Node> listOfChilds() {
         if (childrens == null)
-            return null;
+            childrens = new boolean[0];
         
         LinkedList<Node> childs = new LinkedList<Node>();
         for (int i = 0; i < childrens.length; i++) {

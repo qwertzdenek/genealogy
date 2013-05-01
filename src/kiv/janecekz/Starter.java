@@ -8,20 +8,74 @@
 
 package kiv.janecekz;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
 
 public class Starter {
-    public static void main(String[] args) {
-        NTree familyTree = new NTree("familyData");
-        Genealogy gen = new Genealogy();
+    private static BufferedReader br;
 
-        gen.setMe(familyTree.getId(1));
-        gen.answer(familyTree.getId(2), "moje sestra");
+    private static void dieWithError(String s) {
+
+        try {
+            if (br != null)
+                br.close();
+        } catch (IOException e) {
+            System.out.println("Ooops");
+        }
+        System.exit(-1);
     }
-    
+
+    public static void main(String[] args) {
+        br = new BufferedReader(new InputStreamReader(System.in));
+        NTree familyTree = new NTree("familyData");
+        Genealogy gen = new Genealogy(familyTree);
+
+        String q = null;
+        Node me = null;
+        Node tar = null;
+        try {
+            do {
+                System.out.print("Výchozí člověk: ");
+                int m = Integer.parseInt(br.readLine());
+                me = familyTree.getId(m);
+            } while (me == null);
+            System.out.println(">> "+me.toString());
+            
+            do {
+                System.out.print("Cílová osoba: ");
+                int t = Integer.parseInt(br.readLine());
+                tar = familyTree.getId(t);
+            } while (tar == null);
+            System.out.println(">> "+tar.toString());
+            
+            System.out.print("Otázka: ");
+            q = br.readLine();
+        } catch (NumberFormatException e1) {
+            dieWithError("Neplatné číslo");
+        } catch (IOException e1) {
+            dieWithError("Chyba vstupu výstupu");
+        }
+        
+        gen.setMe(me);
+        String r = gen.answer(tar, q);
+        
+        System.out.println("\n>> "+r);
+        
+        try {
+            br.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
     /**
      * For example [aa,bb,cc] returns {"aa", "bb", "cc"}
-     * @param s String to tokenize
+     * 
+     * @param s
+     *            String to tokenize
      * @return array with result
      */
     public static String[] getTokens(String s) {
@@ -43,7 +97,7 @@ public class Starter {
 
             list.add(s.substring(spos, endPos).trim());
         }
-        
+
         return list.toArray(new String[list.size()]);
     }
 }

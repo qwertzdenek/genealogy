@@ -1,14 +1,14 @@
 7
 [0,dítě,syn,dcera]
-C
+Cxa
 [1,rodič,otec,matka]
-P
+Pxa
 [2,sourozenec,bratr,sestra]
-PCN
+PxaCabNbx
 [3,prarodič,dědeček,babička]
-PP
+PxaPab
 [4,sourozenec rodičů,strýc,teta]
-PPCN
+PxaPabCbcNca
 [5,potomek sourozenců rodičů,bratranec,sestřenice]
 PPCNC
 [6,dítě mých dětí,vnuk,vnučka]

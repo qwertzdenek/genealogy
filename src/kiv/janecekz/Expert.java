@@ -22,7 +22,12 @@ public class Expert {
     public static final int POS_MALENAME = 2;
     public static final int POS_FEMALENAME = 3;
     public static final int POS_RULE = 4;
+    
+    private final String P = "P";
+    private final String C = "C";
 
+    private NTree tree;
+    
     private class Relation {
         public final int id;
         public final String desc;
@@ -41,7 +46,8 @@ public class Expert {
 
     private Relation[] relations;
 
-    public Expert(String file) {
+    public Expert(String file, NTree tree) {
+        this.tree = tree;  
         boolean res = processInput(file);
 
         if (!res)
@@ -55,16 +61,15 @@ public class Expert {
      * @param a parent nodes
      * @param b child nodes
      */
-    public void parentOf(Collection<Node> a, Collection<Node> b) {
-        if (!(b instanceof HashSet))
-            b = new HashSet<Node>();
-
-        b.clear();
+    public Collection<Node> parentOf(Collection<Node> a) {
+        Collection<Node> b = new HashSet<Node>();
         
         for (Node node : a) {
             b.add(node.getFather());
             b.add(node.getMother());
         }
+        
+        return b;
     }
 
     /**
@@ -74,15 +79,14 @@ public class Expert {
      * @param a children nodes
      * @param b parent nodes
      */
-    public void childrenOf(Collection<Node> a, Collection<Node> b) {
-        if (!(b instanceof HashSet))
-            b = new HashSet<Node>();
+    public Collection<Node> childrenOf(Collection<Node> a) {
+        Collection<Node> b = new HashSet<Node>();
 
-        b.clear();
-        
         for (Node node : a) {
             b.addAll(node.listOfChilds());
         }
+        
+        return b;
     }
 
     /**
@@ -92,14 +96,45 @@ public class Expert {
      * @param a source nodes
      * @param b nodes to exclude from a
      */
-    public void notThis(Collection<Node> a, Collection<Node> b) {
-        Collection<Node> toDelete = new LinkedList<Node>();
-        toDelete.addAll(b);
-        b.clear();
+    public Collection<Node> notThis(Collection<Node> a, Collection<Node> b) {
+        Collection<Node> newSet = new HashSet<Node>();
         for (Node node : a) {
-            if (!(toDelete.contains(node)))
-                b.add(node);
+            if (!(b.contains(node)))
+                newSet.add(node);
         }
+        
+        return newSet;
+    }
+    
+    /**
+     * Compares complex rule with general path. Like PxaPabCbcNca with PPC gives true.
+     * @param rule1
+     * @param rule2
+     * @return
+     */
+    private boolean compareRel(String rule1, String rule2) {
+        StringBuilder rule1strip = new StringBuilder();
+        // clean rule1
+        for (int i = 0; i < rule1.length(); i++) {
+            if (rule1.charAt(i) == 'P' || rule1.charAt(i) == 'C') {
+                rule1strip.append(rule1.charAt(i));
+                i += 2;
+            } else {
+                i++;
+            }
+        }
+        
+        return rule1strip.toString().equals(rule2);
+    }
+    
+    public int getRealationId(String rule) {
+        for (int i = 0; i < relations.length; i++) {
+            if (compareRel(relations[i].rule,rule)) {
+                return i;
+            }
+        }
+        
+        return -1;
     }
     
     public String[] getRelationInfo(int id) {
@@ -113,6 +148,60 @@ public class Expert {
         return result;
     }
 
+    // TODO: hledání osoby
+    public String findPerson(Node from, Node target) {
+        String result = "Nenalezen";
+        LinkedList<Node> q = new LinkedList<Node>();
+        boolean[] visited = new boolean[tree.size()];
+        
+        String[] paths = new String[tree.size()];
+        for (int i = 0; i < paths.length; i++) {
+            paths[i] = "";
+        }
+        
+        visited[from.getId()] = true;
+        q.add(from);
+        
+        while (!q.isEmpty()) {
+            Node v = q.pollLast();
+            
+            if (v.equals(target)) {
+                int id = getRealationId(paths[v.getId()]);
+                if (id == -1) {
+                    result = "Nenalezen vztah";
+                } else {
+                    if (v.isMale())
+                        result = "Nalezen "+v.getName()+" ve vztahu "+relations[id].maleName;
+                    else
+                        result = "Nalezena "+v.getName()+" ve vztahu "+relations[id].femaleName;
+                }
+            }
+            
+            for (Node w : v.listOfChilds()) {
+                if (!visited[w.getId()]) {
+                    visited[w.getId()] = true;
+                    paths[w.getId()] = paths[v.getId()] + C;
+                    q.add(w);
+                }
+            }
+            
+            Node[] parents = {v.getFather(), v.getMother()};
+            
+            for (Node w : parents) {
+                if (w == null)
+                    continue;
+                
+                if (!visited[w.getId()]) {
+                    visited[w.getId()] = true;
+                    paths[w.getId()] = paths[v.getId()] + P;
+                    q.add(w);
+                }
+            }
+        }
+        
+        return result;
+    }
+    
     private boolean processInput(String file) {
         BufferedReader input = null;
         try {
@@ -140,7 +229,7 @@ public class Expert {
                         values[POS_MALENAME], values[POS_FEMALENAME]);
 
                 curLine = input.readLine();
-                onerel.rule = curLine.trim().toUpperCase();
+                onerel.rule = curLine.trim();
 
                 relations[i] = onerel;
             }
