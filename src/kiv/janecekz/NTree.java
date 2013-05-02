@@ -175,4 +175,8 @@ public class NTree {
 
         return newNod;
     }
+    
+    public void printTree() {
+        instances[0].printPretty("", true);
+    }
 }

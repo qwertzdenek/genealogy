@@ -163,4 +163,25 @@ public class Node {
         
         return childs;
     }
+    
+    public void printPretty(String indent, boolean last) {
+        System.out.print(indent);
+        if (last) {
+            System.out.print("\\-");
+            indent += "  ";
+        }
+        else {
+            System.out.print("|-");
+            indent += "| ";
+        }
+        System.out.println(String.format("%s (%d)", name, id));
+        
+        Collection<Node> childs = listOfChilds();
+        int count = childs.size();
+        int i = 0;
+        for (Node n : listOfChilds()) {
+            n.printPretty(indent, i == count - 1);
+            i++;
+        }
+    }
 }

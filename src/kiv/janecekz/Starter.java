@@ -15,9 +15,13 @@ import java.util.LinkedList;
 
 public class Starter {
     private static BufferedReader br;
+    private static NTree familyTree;
+    private static Expert ex;
 
-    private static void dieWithError(String s) {
+    private static final char ESC = 27;
 
+    public static void dieWithError(String s) {
+        System.out.println(s);
         try {
             if (br != null)
                 br.close();
@@ -27,48 +31,142 @@ public class Starter {
         System.exit(-1);
     }
 
-    public static void main(String[] args) {
-        br = new BufferedReader(new InputStreamReader(System.in));
-        NTree familyTree = new NTree("familyData");
-        Genealogy gen = new Genealogy(familyTree);
+    private static void printMenu() {
+        System.out.println("Otázky:");
+        System.out.println("1)  kdo všechno je");
+        System.out.println("2)  test vztahu");
+        System.out.println("3)  v jakém vztahu jsou");
+        System.out.println("4)  vypsat strom\n");
+    }
 
-        String q = null;
-        Node me = null;
-        Node tar = null;
+    private static String doAnswer() {
+        Node from;
+        Node target;
+        int[] r;
+        boolean male;
+
+        System.out.print(ESC + "[0;0H");
+        System.out.print(ESC + "[2J");
+        printMenu();
+
+        int q = 1;
         try {
-            do {
-                System.out.print("Výchozí člověk: ");
-                int m = Integer.parseInt(br.readLine());
-                me = familyTree.getId(m);
-            } while (me == null);
-            System.out.println(">> "+me.toString());
-            
-            do {
-                System.out.print("Cílová osoba: ");
-                int t = Integer.parseInt(br.readLine());
-                tar = familyTree.getId(t);
-            } while (tar == null);
-            System.out.println(">> "+tar.toString());
-            
-            System.out.print("Otázka: ");
-            q = br.readLine();
-        } catch (NumberFormatException e1) {
-            dieWithError("Neplatné číslo");
-        } catch (IOException e1) {
-            dieWithError("Chyba vstupu výstupu");
+            q = Integer.parseInt(prompt(">> "));
+
+            switch (q) {
+            case 1:
+                from = promptNode();
+                r = promptRel();
+                male = r[1] == 0 ? false : true;
+                System.out.println(ex.findPersons(from, r[0], male));
+                break;
+            case 2:
+                from = promptNode();
+                target = promptNode();
+                r = promptRel();
+                male = r[1] == 0 ? false : true;
+                System.out.println(ex.testRelation(from, target, r[0], male));
+                break;
+            case 3:
+                from = promptNode();
+                target = promptNode();
+
+                System.out.println(ex.findPerson(from, target));
+                break;
+            case 4:
+                System.out.println("Načten strom:");
+                familyTree.printTree();
+                break;
+            default:
+                break;
+            }
+        } catch (NumberFormatException e) {
+            dieWithError("(EE) Neplatné číslo");
         }
-        
-        gen.setMe(me);
-        String r = gen.answer(tar, q);
-        
-        System.out.println("\n>> "+r);
-        
+        return null;
+    }
+    
+    private static String prompt(String prompt) {
+        System.out.print(prompt);
+        String res = null;
         try {
-            br.close();
+            res = br.readLine();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            dieWithError("(EE) chyba vstupu");
         }
+        return res;
+    }
+
+    private static Node promptNode() {
+        System.out.print(ESC + "[0;0H");
+        System.out.print(ESC + "[2J");
+        System.out.flush();
+
+        for (int i = 1; i < familyTree.size(); i++) {
+            Node p = familyTree.getId(i);
+            System.out.println(String.format(" (%d) %s", i, p.getName()));
+        }
+        Node res = null;
+        try {
+            System.out.println("Zadejte id osoby: ");
+            int ch = Integer.parseInt(br.readLine());
+            res = familyTree.getId(ch);
+
+            if (res == null)
+                dieWithError("(EE) Neexistující osoba");
+
+        } catch (IOException e) {
+            dieWithError("(EE) chyba vstupu");
+        }
+        return res;
+    }
+
+    private static int[] promptRel() {
+        System.out.print(ESC + "[0;0H");
+        System.out.print(ESC + "[2J");
+        System.out.flush();
+
+        int[] res = new int[2];
+        String[] p;
+
+        String[][] rel = ex.getRelations();
+        for (int i = 0; i < rel.length; i++) {
+            p = rel[i];
+            String line = String.format(" (%s) %s, %s", p[Expert.POS_ID],
+                    p[Expert.POS_MALENAME], p[Expert.POS_FEMALENAME]);
+            System.out.println(line);
+        }
+
+        try {
+            boolean found = false;
+
+            do {
+                System.out.print("\nZadejte vztah: ");
+                String ch = br.readLine();
+
+                int male = 0;
+
+                for (int i = 0; i < rel.length; i++) {
+                    p = rel[i];
+                    if (ch.equals(p[Expert.POS_FEMALENAME])) {
+                        res[0] = i;
+                        res[1] = male;
+                        break;
+                    }
+                    male++;
+                    if (ch.equals(p[Expert.POS_MALENAME])) {
+                        res[0] = i;
+                        res[1] = male;
+                        break;
+                    }
+                    male--;
+                }
+            } while (found == false);
+
+        } catch (IOException e) {
+            dieWithError("(EE) chyba vstupu");
+        }
+        return res;
     }
 
     /**
@@ -99,5 +197,23 @@ public class Starter {
         }
 
         return list.toArray(new String[list.size()]);
+    }
+    
+    public static void main(String[] args) {
+        br = new BufferedReader(new InputStreamReader(System.in));
+        familyTree = new NTree("familyData");
+        ex = new Expert(familyTree, br);
+
+        do {
+            String r = doAnswer();
+
+            System.out.println("\n>> " + r);
+        } while (prompt("Další otázku? a/n").charAt(0) == 'a');
+
+        try {
+            br.close();
+        } catch (IOException e) {
+            dieWithError("(EE) chyba při vypínání");
+        }
     }
 }
