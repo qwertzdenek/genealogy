@@ -17,7 +17,9 @@ public class Starter {
     private static BufferedReader br;
     private static NTree familyTree;
     private static Expert ex;
+    private static String title;
 
+    private static boolean runnning = true;
     private static final char ESC = 27;
 
     public static void dieWithError(String s) {
@@ -36,45 +38,74 @@ public class Starter {
         System.out.println("1)  kdo všechno je");
         System.out.println("2)  test vztahu");
         System.out.println("3)  v jakém vztahu jsou");
-        System.out.println("4)  vypsat strom\n");
+        System.out.println("4)  vypsat pokrevní linii");
+        System.out.println("5)  vypsat strom\n");
     }
 
     private static String doAnswer() {
+        String res = "";
         Node from;
         Node target;
         int[] r;
         boolean male;
 
-        System.out.print(ESC + "[0;0H");
         System.out.print(ESC + "[2J");
+        System.out.print(ESC + "[1;1H");
         printMenu();
 
         int q = 1;
         try {
-            q = Integer.parseInt(prompt(">> "));
+            String qstr = prompt(">> ");
+            q = Integer.parseInt(qstr);
+
+            if (qstr.charAt(0) == 'q') {
+                runnning = false;
+                return "Končím...";
+            }
 
             switch (q) {
             case 1:
+                printTitle("Kdo všechno je ");
                 from = promptNode();
+                printTitle(title + from.getName());
                 r = promptRel();
                 male = r[1] == 0 ? false : true;
-                System.out.println(ex.findPersons(from, r[0], male));
+                printTitle(title
+                        + " : "
+                        + ex.getRelationInfo(r[0])[male ? Expert.POS_MALENAME
+                                : Expert.POS_FEMALENAME]);
+                res = ex.findPersons(from, r[0], male).toString();
                 break;
             case 2:
+                printTitle("Je ");
                 from = promptNode();
-                target = promptNode();
+                printTitle(title + from.getName());
                 r = promptRel();
                 male = r[1] == 0 ? false : true;
-                System.out.println(ex.testRelation(from, target, r[0], male));
+                printTitle(title
+                        + " "
+                        + ex.getRelationInfo(r[0])[male ? Expert.POS_MALENAME
+                                : Expert.POS_FEMALENAME]);
+                target = promptNode();
+                printTitle(title + " " + target.getName());
+                res = ex.testRelation(from, target, r[0], male) ? "Pravda" : "Nepravda";
                 break;
             case 3:
+                printTitle("V jakém vztahu jsou ");
                 from = promptNode();
+                printTitle(title+from.getName()+" a ");
                 target = promptNode();
-
-                System.out.println(ex.findPerson(from, target));
+                printTitle(title+target.getName());
+                res = ex.findPerson(from, target);
                 break;
             case 4:
-                System.out.println("Načten strom:");
+                printTitle("Pokrevní linie");
+                from = promptNode();
+                int deep = Integer.parseInt(prompt("Jak hluboko hledat? "));
+                res = ex.bloodline(from, deep).toString();
+                break;
+            case 5:
+                printTitle("Rodinný strom");
                 familyTree.printTree();
                 break;
             default:
@@ -83,9 +114,9 @@ public class Starter {
         } catch (NumberFormatException e) {
             dieWithError("(EE) Neplatné číslo");
         }
-        return null;
+        return res;
     }
-    
+
     private static String prompt(String prompt) {
         System.out.print(prompt);
         String res = null;
@@ -98,8 +129,8 @@ public class Starter {
     }
 
     private static Node promptNode() {
-        System.out.print(ESC + "[0;0H");
-        System.out.print(ESC + "[2J");
+        System.out.print(ESC + "[2;1H");
+        System.out.print(ESC + "[J");
         System.out.flush();
 
         for (int i = 1; i < familyTree.size(); i++) {
@@ -122,8 +153,8 @@ public class Starter {
     }
 
     private static int[] promptRel() {
-        System.out.print(ESC + "[0;0H");
-        System.out.print(ESC + "[2J");
+        System.out.print(ESC + "[2;1H");
+        System.out.print(ESC + "[J");
         System.out.flush();
 
         int[] res = new int[2];
@@ -151,12 +182,14 @@ public class Starter {
                     if (ch.equals(p[Expert.POS_FEMALENAME])) {
                         res[0] = i;
                         res[1] = male;
+                        found = true;
                         break;
                     }
                     male++;
                     if (ch.equals(p[Expert.POS_MALENAME])) {
                         res[0] = i;
                         res[1] = male;
+                        found = true;
                         break;
                     }
                     male--;
@@ -167,6 +200,23 @@ public class Starter {
             dieWithError("(EE) chyba vstupu");
         }
         return res;
+    }
+
+    private static void printTitle(String s) {
+        title = s;
+        // saves cursor position
+        System.out.print(ESC + "[s");
+
+        // moves cursor to upper left corner
+        System.out.print(ESC + "[1;1H");
+
+        // clears line
+        System.out.print(ESC + "[2K");
+
+        System.out.print(title);
+
+        // restores position
+        System.out.print(ESC + "[u");
     }
 
     /**
@@ -198,7 +248,7 @@ public class Starter {
 
         return list.toArray(new String[list.size()]);
     }
-    
+
     public static void main(String[] args) {
         br = new BufferedReader(new InputStreamReader(System.in));
         familyTree = new NTree("familyData");
@@ -207,8 +257,9 @@ public class Starter {
         do {
             String r = doAnswer();
 
-            System.out.println("\n>> " + r);
-        } while (prompt("Další otázku? a/n").charAt(0) == 'a');
+            if (r.length() > 0)
+                System.out.println("\n>> " + r);
+        } while (runnning && prompt("Další otázku? a/n: ").charAt(0) == 'a');
 
         try {
             br.close();

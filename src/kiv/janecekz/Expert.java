@@ -23,26 +23,13 @@ public class Expert {
     public static final int POS_MALENAME = 2;
     public static final int POS_FEMALENAME = 3;
     public static final int POS_RULE = 4;
-    
+
     private static final String EXP_DATA = "expertData";
-    private static final String QS_DATA = "questions";
     private static final String P = "P";
     private static final String C = "C";
 
     private NTree tree;
-    private BufferedReader br;
-    private Question[] questions;
     private Relation[] relations;
-    
-    private class Question {
-        public String desc;
-        public String rule;
-
-        public Question(String desc, String rule) {
-            this.desc = desc;
-            this.rule = rule;
-        }
-    }
 
     private class Relation {
         public final int id;
@@ -62,10 +49,9 @@ public class Expert {
 
     public Expert(NTree tree, BufferedReader br) {
         this.tree = tree;
-        
+
         try {
             processExpInput(EXP_DATA);
-            processQsInput(QS_DATA);
         } catch (FileNotFoundException e) {
             Starter.dieWithError("(EE) Soubor nenalezen");
         } catch (IOException e) {
@@ -251,7 +237,7 @@ public class Expert {
         q.add(from);
 
         while (!q.isEmpty()) {
-            Node v = q.pollLast();
+            Node v = q.pollFirst();
 
             if (v.equals(target)) {
                 int id = getRealationId(paths[v.getId()]);
@@ -321,7 +307,8 @@ public class Expert {
         q.add(from);
 
         while (!q.isEmpty()) {
-            Node v = q.pollLast();
+            // TODO: check ;)
+            Node v = q.pollFirst();
 
             if (v.isMale() == male && compareRel(rule, paths[v.getId()])) {
                 result.add(v);
@@ -356,16 +343,16 @@ public class Expert {
         boolean result = false;
         HashMap<Character, Collection<Node>> terms;
         terms = new HashMap<Character, Collection<Node>>();
-        
+
         HashSet<Node> first = new HashSet<Node>();
         HashSet<Node> second = null;
-        
+
         Collection<Node> initial = new HashSet<Node>();
         initial.add(from);
         terms.put('x', initial);
 
         String val = relations[rel].rule;
-        
+
         for (int symIt = 0; symIt < val.length(); symIt++) {
             switch (val.charAt(symIt)) {
             case 'P':
@@ -396,8 +383,50 @@ public class Expert {
             result = true;
         else
             result = false;
-        
+
         return result;
+    }
+
+    public Collection<Node> bloodline(Node from, int deep) {
+        Collection<Node> res = new HashSet<Node>();
+        LinkedList<Node> q = new LinkedList<Node>();
+
+        q.add(from);
+
+        int d = 0;
+        int timeToDepthIncrease = 1;
+        boolean pendingDepthIncrease = false;
+        while (!q.isEmpty()) {
+            if (d > deep)
+                break;
+
+            Node v = q.pollFirst();
+            res.add(v);
+            timeToDepthIncrease--;
+            
+            if (timeToDepthIncrease == 0) {
+                d++;
+                pendingDepthIncrease = true;
+            }
+
+            Node[] parents = { v.getFather(), v.getMother() };
+
+            for (Node w : parents) {
+                if (w == null || w.equals(tree.getId(0)))
+                    continue;
+
+                q.add(w);
+            }
+            
+            if (pendingDepthIncrease) {
+                timeToDepthIncrease = q.size();
+                pendingDepthIncrease = false;
+            }
+        }
+
+        res.remove(from);
+        
+        return res;
     }
 
     private void processExpInput(String file) throws FileNotFoundException,
@@ -425,34 +454,6 @@ public class Expert {
             onerel.rule = curLine.trim();
 
             relations[i] = onerel;
-        }
-
-        input.close();
-    }
-
-    private void processQsInput(String file) throws FileNotFoundException,
-            IOException {
-        BufferedReader input = null;
-        input = new BufferedReader(new FileReader(file));
-
-        String curLine;
-
-        // We add one virtual nod to save end of line.
-        int count = Integer.parseInt(input.readLine().trim());
-
-        // first line shows count of input data
-        questions = new Question[count];
-
-        for (int i = 0; i < count; i++) {
-            curLine = input.readLine();
-            String[] values = Starter.getTokens(curLine);
-            curLine = input.readLine();
-
-            Question oneq = new Question(values[0], curLine);
-
-            oneq.rule = curLine.trim();
-
-            questions[i] = oneq;
         }
 
         input.close();
