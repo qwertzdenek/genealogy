@@ -1,0 +1,51 @@
+\documentclass[a4paper, 12pt]{article}
+
+\usepackage{czech}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{url}
+% \usepackage{a4wide}
+
+\def\CS{$\cal C\kern-.1667em\lower.5ex\hbox{$\cal S$}\kern-.075em $}
+\DeclareUrlCommand\url{\def\UrlLeft{<}\def\UrlRight{>} \urlstyle{tt}}
+
+\lstset{language=Java}
+
+\begin{document}
+\begin{titlepage}
+\includegraphics[bb=0 0 167 96]{fav_cmyk.pdf}
+\vfill
+\begin{center}
+{\huge Umělá inteligence a rozpoznávání}\\[3ex]
+{\Large Expertní genealogický systém}
+\end{center}
+\vfill
+\begin{tabbing}
+Vypracoval: \hspace{1ex}\=Zdeněk Janeček\kill
+Vypracoval: \>Zdeněk \textsc{Janeček}\\[1ex]
+Datum:\> \today
+\end{tabbing}
+\end{titlepage}
+
+\tableofcontents
+
+\section{Zadání}
+Vytvořte genealogický expertní systém. Vstupem bude informace databáze
+základních informací o osobě [id, jméno, matka, otec, pohlaví, partner].
+Program bude umět odpovídat na otázky: Kdo je můj pokrevní příbuzný?
+Kolik má moje prateta sestřenic? Jaký je vtah mezi Petrem a Pavlem?\ldots
+a další podobné.
+
+\section{Analýza}
+% grafové prohledávání, datové struktury
+
+\section{Design}
+% Exprertní a klientská třída, UI
+
+\section{Shrnutí}
+Při psaní jsem několikrát lehce změnil návrh. V počátku jsem o expertním
+systému nevěděl vůbec nic. Ve výsledku jsem použil již ověřené postupy.
+Cesta vedla přes zjednodušení celého modelu na jednu expertní třídu.
+
+\end{document}
