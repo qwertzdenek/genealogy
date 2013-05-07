@@ -175,7 +175,7 @@ public class Expert {
                 rule1strip.append(rule1.charAt(i));
                 i += 2;
             } else {
-                i++;
+                i += 2;
             }
         }
 
@@ -307,7 +307,6 @@ public class Expert {
         q.add(from);
 
         while (!q.isEmpty()) {
-            // TODO: check ;)
             Node v = q.pollFirst();
 
             if (v.isMale() == male && compareRel(rule, paths[v.getId()])) {
@@ -346,6 +345,7 @@ public class Expert {
 
         HashSet<Node> first = new HashSet<Node>();
         HashSet<Node> second = null;
+        Collection<Node> test = null;
 
         Collection<Node> initial = new HashSet<Node>();
         initial.add(from);
@@ -358,13 +358,22 @@ public class Expert {
             case 'P':
                 first = (HashSet<Node>) terms.get(new Character(val
                         .charAt(++symIt)));
-                second = (HashSet<Node>) parentOf(first);
+                // TODO: check if doesn't have any parents. NULL pointer
+                test = parentOf(first);
+                if (test.contains(tree.getId(0)) || test == null)
+                    return false;
+                else
+                    second = (HashSet<Node>) test;
                 terms.put(val.charAt(++symIt), new HashSet<Node>(second));
                 break;
             case 'C':
                 first = (HashSet<Node>) terms.get(new Character(val
                         .charAt(++symIt)));
-                second = (HashSet<Node>) childrenOf(first);
+                test = childrenOf(first);
+                if (test == null)
+                    return false;
+                else
+                    second = (HashSet<Node>) test;
                 terms.put(val.charAt(++symIt), new HashSet<Node>(second));
                 break;
             case 'N':
@@ -379,7 +388,7 @@ public class Expert {
             }
         }
 
-        if (male == from.isMale() && second.contains(target))
+        if (male == target.isMale() && second.contains(target))
             result = true;
         else
             result = false;

@@ -88,7 +88,7 @@ public class Starter {
                                 : Expert.POS_FEMALENAME]);
                 target = promptNode();
                 printTitle(title + " " + target.getName());
-                res = ex.testRelation(from, target, r[0], male) ? "Pravda" : "Nepravda";
+                res = ex.testRelation(target, from, r[0], male) ? "Pravda" : "Nepravda";
                 break;
             case 3:
                 printTitle("V jakém vztahu jsou ");
@@ -259,7 +259,7 @@ public class Starter {
 
             if (r.length() > 0)
                 System.out.println("\n>> " + r);
-        } while (runnning && prompt("Další otázku? a/n: ").charAt(0) == 'a');
+        } while (runnning && prompt("Další otázku? a/n: ").toLowerCase().equals("a"));
 
         try {
             br.close();

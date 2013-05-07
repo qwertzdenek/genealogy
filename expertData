@@ -1,4 +1,4 @@
-7
+8
 [0,dítě,syn,dcera]
 Cxa
 [1,rodič,otec,matka]
@@ -13,3 +13,5 @@ PxaPabCbcNca
 PxaPabCbcNdaCdy
 [6,dítě mých dětí,vnuk,vnučka]
 CxaCab
+[7,potomek sourozence,synovec,neteř]
+PxaCabNbxCbc
