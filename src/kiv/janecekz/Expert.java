@@ -47,7 +47,7 @@ public class Expert {
         }
     }
 
-    public Expert(NTree tree, BufferedReader br) {
+    public Expert(NTree tree) {
         this.tree = tree;
 
         try {
@@ -60,13 +60,11 @@ public class Expert {
     }
 
     /**
-     * Function for Predicate logic expression. Method fills {@code b} with
-     * childrens of all elements of {@code a}.
+     * Function for Predicate logic expression. Method returns Collection with
+     * parents of all elements from {@code a}.
      * 
-     * @param a
-     *            parent nodes
-     * @param b
-     *            child nodes
+     * @param a child nodes
+     * @return parent nodes
      */
     public Collection<Node> parentOf(Collection<Node> a) {
         Collection<Node> b = new HashSet<Node>();
@@ -80,13 +78,11 @@ public class Expert {
     }
 
     /**
-     * Function for Predicate logic expression. Method fills {@code b} with
-     * parents of all elements of {@code a}.
+     * Function for Predicate logic expression. Method returns Collection with
+     * childrens of all elements from {@code a}.
      * 
-     * @param a
-     *            children nodes
-     * @param b
-     *            parent nodes
+     * @param a parent nodes
+     * @return child nodes
      */
     public Collection<Node> childrenOf(Collection<Node> a) {
         Collection<Node> b = new HashSet<Node>();
@@ -99,13 +95,11 @@ public class Expert {
     }
 
     /**
-     * Function for Predicate logic expression. Method fills b with all objects
-     * that are in {@code a} but without objects in {@code b}.
+     * Function for Predicate logic expression. Method retuns new HashSet
+     * with all objects that are in {@code a} but without objects in {@code b}.
      * 
-     * @param a
-     *            source nodes
-     * @param b
-     *            nodes to exclude from a
+     * @param a source nodes
+     * @param b nodes to exclude from a
      */
     public Collection<Node> notThis(Collection<Node> a, Collection<Node> b) {
         Collection<Node> newSet = new HashSet<Node>();
@@ -115,48 +109,6 @@ public class Expert {
         }
 
         return newSet;
-    }
-
-    public Collection<Node> listChilds(Collection<Node> persons,
-            Collection<Node> result) {
-        result.clear();
-
-        if (result instanceof HashSet) {
-            for (Node p : persons) {
-                result.addAll(p.listOfChilds());
-            }
-        } else {
-            for (Node p : persons) {
-                for (Node c : p.listOfChilds()) {
-                    if (!result.contains(c))
-                        result.add(c);
-                }
-
-            }
-        }
-
-        return result;
-    }
-
-    public Collection<Node> listParents(Collection<Node> persons,
-            Collection<Node> result) {
-        result.clear();
-
-        if (result instanceof HashSet) {
-            for (Node p : persons) {
-                result.add(p.getFather());
-                result.add(p.getMother());
-            }
-        } else {
-            for (Node p : persons) {
-                if (!result.contains(p.getFather()))
-                    result.add(p.getFather());
-                if (!result.contains(p.getMother()))
-                    result.add(p.getMother());
-            }
-        }
-
-        return result;
     }
 
     /**
@@ -182,6 +134,12 @@ public class Expert {
         return rule1strip.toString().equals(rule2);
     }
 
+    /**
+     * Get from the general rule (PPC) index to the {@code relations} table.
+     * 
+     * @param rule rule you want to find
+     * @return index to the {@code relations} table.
+     */
     public int getRealationId(String rule) {
         for (int i = 0; i < relations.length; i++) {
             if (compareRel(relations[i].rule, rule)) {
@@ -192,6 +150,13 @@ public class Expert {
         return -1;
     }
 
+    /**
+     * Description array of one relation.
+     * 
+     * @param id relation id
+     * @return string array. Indexes are described by the Expert
+     * constants POS_*.
+     */
     public String[] getRelationInfo(int id) {
         String[] result = new String[5];
         result[POS_ID] = Integer.toString(id);
@@ -203,6 +168,10 @@ public class Expert {
         return result;
     }
 
+    /**
+     * Simple method to get whole library of relations.
+     * @return twodimensional array with description.
+     */
     public String[][] getRelations() {
         String[][] result = new String[relations.length][5];
         for (int i = 0; i < relations.length; i++) {
@@ -217,7 +186,7 @@ public class Expert {
      * 
      * @param from
      * @param target
-     * @return
+     * @return result of search
      */
     public String findPerson(Node from, Node target) {
         if (from == null || target == null) {
@@ -338,6 +307,14 @@ public class Expert {
         return result;
     }
 
+    /**
+     * 
+     * @param from
+     * @param target
+     * @param rel
+     * @param male true if I look for male, false if it is female
+     * @return true if found the person and the false in other case
+     */
     public boolean testRelation(Node from, Node target, int rel, boolean male) {
         boolean result = false;
         HashMap<Character, Collection<Node>> terms;
@@ -396,6 +373,12 @@ public class Expert {
         return result;
     }
 
+    /**
+     * Get your blood line. They are all parents of parents and so on.
+     * @param from
+     * @param deep how deep you want to search
+     * @return
+     */
     public Collection<Node> bloodline(Node from, int deep) {
         Collection<Node> res = new HashSet<Node>();
         LinkedList<Node> q = new LinkedList<Node>();

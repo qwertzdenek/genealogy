@@ -252,7 +252,7 @@ public class Starter {
     public static void main(String[] args) {
         br = new BufferedReader(new InputStreamReader(System.in));
         familyTree = new NTree("familyData");
-        ex = new Expert(familyTree, br);
+        ex = new Expert(familyTree);
 
         do {
             String r = doAnswer();
