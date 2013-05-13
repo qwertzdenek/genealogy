@@ -65,8 +65,7 @@ public class NTree {
                     continue;
                 }
 
-                Node newNod = createNod(curLine);
-                instances[newNod.getId()] = newNod;
+                createNod(curLine);
             }
 
             input.close();
@@ -106,7 +105,7 @@ public class NTree {
      * @param s
      * @return
      */
-    private Node createNod(String s) {
+    private void createNod(String s) {
         Node newNod;
 
         int id;
@@ -172,8 +171,6 @@ public class NTree {
             newNod = instances[id];
             newNod.updateInfo(name, mother, father, partner);
         }
-
-        return newNod;
     }
     
     public void printTree() {

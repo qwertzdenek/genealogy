@@ -163,8 +163,7 @@ public class Starter {
         String[][] rel = ex.getRelations();
         for (int i = 0; i < rel.length; i++) {
             p = rel[i];
-            String line = String.format(" (%s) %s, %s", p[Expert.POS_ID],
-                    p[Expert.POS_MALENAME], p[Expert.POS_FEMALENAME]);
+            String line = String.format(" %s, %s", p[Expert.POS_MALENAME], p[Expert.POS_FEMALENAME]);
             System.out.println(line);
         }
 
