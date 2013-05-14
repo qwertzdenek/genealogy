@@ -30,20 +30,20 @@ Datum:\> \today
 
 \section{Zadání}
 Vytvořte genealogický expertní systém. Vstupem bude informace databáze
-základních informací o osobě [id, jméno, matka, otec, pohlaví, partner].
+základních informací o~osobě [id, jméno, matka, otec, pohlaví, partner].
 Program bude umět odpovídat na otázky: Kdo je můj pokrevní příbuzný?
 Kolik má moje prateta sestřenic? Jaký je vtah mezi Petrem a Pavlem?\ldots
 a další podobné.
 
 \section{Analýza}
 % TODO: alternativní řešení
-Rodinný strom je z hlediska grafové teorie n-ární strom, protože mám dva
+Rodinný strom je z~hlediska grafové teorie n-ární strom, protože mám dva
 rodiče a neomezeně mnoho dětí. Pokud zanedbám manželství a postavím
 strom jen ze vztahů rodič--potomek, bude požadovaná acykličnost grafu
 zachována.
 Manželství není stálé a stačí si ho tedy pouze zaznamenat.
 Společné děti manželů, také nejsou jisté, tudíž je praktičtější ukládat
-si potomky u každého rodiče zvlášť.
+si potomky u~každého rodiče zvlášť.
 
 Jak tedy dobře reprezentovat tento strom aby se dobře prohledával?
 První co mě napadne je, že každý uzel bude jeden objekt a bude mít
@@ -58,25 +58,25 @@ Abych mohl ukládat rodinný strom, je třeba stanovit jeho kořen. Mám tedy
 dvě varianty. Kořenem bude jeden společný potomek, a nebo společná
 matka. Zvolil jsem jako kořenový uzel supermatku, která dostala id 0.
 
-Pro ukládání dat o rodině jsem vytvořil jednoduchý formát souboru.
+Pro ukládání dat o~rodině jsem vytvořil jednoduchý formát souboru.
 Na obrázku \ref{fig:familyk} vidíte následující položky:
 
 \begin{enumerate}
 \setcounter{enumi}{-1}
 \item ID
 \item Jméno
-\item (červeně) id natky
+\item (červeně) id matky
 \item (azurová) id otce
 \item (zelené) true -- muž, false -- žena
 \item (modře) partner, nemá partnera pak \emph{nil}
 \end{enumerate}
 
-Když víme počet položek z prvního řádku, algoritmus je pak jednoduchý:
+Když víme počet položek z~prvního řádku, algoritmus je pak jednoduchý:
 \begin{enumerate}
 \item načti atributy
 \item když neexistuje osoba, vytvoř její základ
 \item přidej se jako dítě rodiče a nastav partnera. Pokud ještě neexistuji, vytvoř je
-\item aktualizuj informace o sobě
+\item aktualizuj informace o~sobě
 \item opakuj krok 1 pro další osobu
 \end{enumerate}
 \begin{figure}
@@ -88,7 +88,7 @@ Když víme počet položek z prvního řádku, algoritmus je pak jednoduchý:
 [4, Kocourková Ivana, \textcolor{red}{8}, \textcolor{cyan}{9}, \textcolor{green}{false}, \textcolor{blue}{3}]
 }
 \end{minipage}}
-\caption{Formát souboru s rodinnými daty.}
+\caption{Formát souboru s~rodinnými daty.}
 \label{fig:familyk}
 \end{figure}
 
@@ -99,20 +99,20 @@ prohledávání a sledovat, zda jsme dostáli požadovaného výsledku.
 Při zápisu výstupu byly použity escape sekvence,
 které umožňují mazat kusy obrazovky a tím dosáhnout určité
 interaktivity. Budou stačit dva způsoby vstupu a to pro \emph{id osoby} a
-požadovaný vztah. V hlavičce programu se bude vypisovat formulovaná
-otázka. Více v sekci \ref{sec:int} na straně \pageref{sec:int}.
+požadovaný vztah. V~hlavičce programu se bude vypisovat formulovaná
+otázka. Více v~sekci \ref{sec:int} na straně \pageref{sec:int}.
 
 Uvnitř programu zastupuje třída \texttt{NTree} rodinný strom. Tato třída je
-konstruována s parametrem souboru s rodinnými daty. Při vytvoření se soubor
-načte a vytvoří pole instancí třídy \texttt{Node}. Nyní máme k dispozici
+konstruována s~parametrem souboru s~rodinnými daty. Při vytvoření se soubor
+načte a vytvoří pole instancí třídy \texttt{Node}. Nyní máme k~dispozici
 například metodu \texttt{void printTree()}, která vytiskne strom na
 obrazovku. Každý \texttt{Node} představuje jednu osobu. Procházení stromu
 je pak rychlé, protože můžu využít jak tabulku, tak odkaz na sousední uzel.
-Veškeré dotazy na uzel se pak provádí v čase $\mathcal{O}(1)$.
+Veškeré dotazy na uzel se pak provádí v~čase $\mathcal{O}(1)$.
 
-Další část je práce s expertními daty. Bylo třeba navrhnout jak
+Další část je práce s~expertními daty. Bylo třeba navrhnout jak
 reprezentovat rodinný vztah. Využil jsem predikátové logiky,
-která je dostatečně univerzální pro práci s množinou prvků.
+která je dostatečně univerzální pro práci s~množinou prvků.
 Definoval jsem například:
 
 \begin{equation}
@@ -124,13 +124,13 @@ Vystačil jsem si se třemi funkcemi říkající:
 \begin{description}
 \item[P(a,b)] rodiče termu \emph{a} jsou \emph{b}.
 \item[C(a,b)] děti termu \emph{a} jsou \emph{b}.
-\item[N(a,b)] term \emph{a} neobsahuje prvky z \emph{b}.
+\item[N(a,b)] term \emph{a} neobsahuje prvky z~\emph{b}.
 \end{description}
 
 Soubor jsem navrhl podobně. Stačilo se zbavit závorek a konjunkcí,
 které budou platit vždy a není tedy nutné je ukládat. Soubor má formát
 podle obrázku \ref{fig:expert}. První řádek je opět počet položek
-v tomto souboru. Každé pravidlo má dva řádky. První z nich obsahuje
+v~tomto souboru. Každé pravidlo má dva řádky. První z~nich obsahuje
 popis vztahu a na dalším je samotné pravidlo.
 
 \begin{figure}
@@ -144,7 +144,7 @@ PxaPab\\[3pt]
 PxaPabCbcNca
 }
 \end{minipage}}
-\caption{Formát souboru s expertními daty.}
+\caption{Formát souboru s~expertními daty.}
 \label{fig:expert}
 \end{figure}
 
@@ -170,7 +170,7 @@ public int getRealationId(String rule) {
 Pokud potřebuji odpovědět na otázky typu:
 
 \begin{quote}
-V jakém vztahu jsou Petr a Ivana?
+V~jakém vztahu jsou Petr a Ivana?
 \end{quote}
 
 \begin{verbatim}
@@ -185,7 +185,7 @@ public String findPerson(Node from, Node target) {}
 \end{verbatim}
 
 Prohledáváním do šířky od uzlu \texttt{from} přidávám každému
-nově nalezenému uzlu záznam o jeho cestě. Ukládám si pole
+nově nalezenému uzlu záznam o~jeho cestě. Ukládám si pole
 \texttt{paths}, kde jsou řetězce ve stylu PCC. Do fronty \texttt{q}
 přidávám jak jeho děti, tak rodiče.
 
@@ -217,7 +217,7 @@ public Collection<Node> findPersons(Node from,
 \end{verbatim}
 
 Prohledáváním do šířky od uzlu \texttt{from} přidávám každému
-nově nalezenému uzlu záznam o jeho cestě. Ukládám si pole
+nově nalezenému uzlu záznam o~jeho cestě. Ukládám si pole
 \texttt{paths}, kde jsou řetězce ve stylu PCC. Do fronty \texttt{q}
 přidávám jak jeho děti, tak rodiče.
 
@@ -235,7 +235,7 @@ Vzniklý seznam \texttt{result} vracím jako návratová hodnota.
 Pokud potřebuji odpovědět na otázky:
 
 \begin{quote}
-Jsou tyto osoby v daném vztahu?
+Jsou tyto osoby v~daném vztahu?
 \end{quote}
 
 \begin{verbatim}
@@ -243,7 +243,7 @@ Jsou tyto osoby v daném vztahu?
  * @param from From which person is done an comparison.
  * @param target To which person is done an comparison.
  * @param rel relation id we want to test
- * @param male true if I look for male, false if it is female
+ * @param male true if I~look for male, false if it is female
  * 
  * @return true if it founds the person and the false in
  *         the other case
@@ -252,12 +252,12 @@ public boolean testRelation(Node from, Node target,
     int rel, boolean male) {}
 \end{verbatim}
 
-V tomto případě se nejedná o slepé prohledávání, ale přesně podle
-daného pravidla. Vedu si evidenci o každém symbolu, který
-jsem našel. Mohu se tedy pak vracet k nějaké starší množině lidí.
+V~tomto případě se nejedná o~slepé prohledávání, ale přesně podle
+daného pravidla. Vedu si evidenci o~každém symbolu, který
+jsem našel. Mohu se tedy pak vracet k~nějaké starší množině lidí.
 Při provádění pravidla využívá funkcí jak byly definovány ve vzoru \ref{eq:rule}.
 První znak je zdroj a druhý je cíl. Na konci se musí hledaná osoba nalézat
-v poslední zpracované množině.
+v~poslední zpracované množině.
 
 \section{Metoda bloodLine}
 Pokud potřebuji odpovědět na otázku:
@@ -277,12 +277,12 @@ Kdo jsou pokrevní příbuzní dané osoby?
 public Collection<Node> bloodline(Node from, int deep) {}
 \end{verbatim}
 
-S použitím dvou stavových proměnných a jedním čítačem
+S~použitím dvou stavových proměnných a jedním čítačem
 je omezeno prohledávání do šířky. Prohledávání se líší od
 předchozích jen tím, že přidávám do fronty jen rodiče.
 
-\section{Interakce s uživatelem}\label{sec:int}
-O uživatelské prostředí se stará třída \texttt{Starter}.
+\section{Interakce s~uživatelem}\label{sec:int}
+O~uživatelské prostředí se stará třída \texttt{Starter}.
 Je tedy nutné používat terminál,
 který je podporuje ANSI ecape kódy\footnote{\url{http://en.wikipedia.org/wiki/ANSI_escape_codes}}.
 
@@ -293,13 +293,13 @@ který je podporuje ANSI ecape kódy\footnote{\url{http://en.wikipedia.org/wiki/
 \label{fig:input}
 \end{figure}
 
-Vytvořil jsem obrázek \ref{fig:input}, na kterím lze snadno vyčíst
+Vytvořil jsem obrázek \ref{fig:input}, na kterém lze snadno vyčíst
 jaký typ dat je očekáván pro jednotlivé otázky. Blok \textsf{node}
 otázku na osobu, \textsf{rel} otázku na vztah (např. bratranec)
 a poslední \textsf{int} načítání celočíselné hodnoty.
 
 Pro účely testování je možné použít soubor \textsf{familyData},
-ve kterém je uložen rodokmen z obrázku \ref{fig:family}.
+ve kterém je uložen rodokmen z~obrázku \ref{fig:family}.
 
 \begin{figure}
 \centering
@@ -309,7 +309,7 @@ ve kterém je uložen rodokmen z obrázku \ref{fig:family}.
 \end{figure}
 
 \section{Spouštění a obsluha}
-K dispozici je popisový soubor \textsf{build.xml}. Pro překlad a spuštění
+K~dispozici je popisový soubor \textsf{build.xml}. Pro překlad a spuštění
 stačí spustit:
 \begin{verbatim}
 $ ant
@@ -321,7 +321,7 @@ znaků $>>$. Vstupem může být číslo, nebo řetězec. To je
 rozepsáno na obrázku \ref{fig:input}.
 
 \section{Shrnutí}
-Při psaní jsem několikrát lehce změnil návrh. V počátku jsem o expertním
+Při psaní jsem několikrát lehce změnil návrh. V~počátku jsem o~expertním
 systému nevěděl vůbec nic, takže jsem použil již ověřené postupy.
 Aplikace byla napsána pomocí Eclipse IDE a dokumentace vysázena systémem
 \LaTeX{}. Projekt má svůj Git repositář na adrese
