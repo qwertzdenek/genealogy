@@ -1,9 +1,12 @@
-/*
+/* 
  * Genealogy expert system.
  * Semestral work for the University of West Bohemia.
  * 
  * Written by Zdeněk Janeček, 2013
  * Share it freely under conditions of GNU GPL v3
+ * 
+ * version 0.92
+ * last change in May 2013
  */
 
 package kiv.janecekz;
@@ -17,6 +20,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+/**
+ * This is an expert class that gives you an answers.
+ * 
+ * @author Zdeněk Janeček
+ */
 public class Expert {
     public static final int POS_ID = 0;
     public static final int POS_DESC = 1;
@@ -47,6 +55,12 @@ public class Expert {
         }
     }
 
+    /**
+     * You can have as much instances you want with the different family
+     * trees.
+     * 
+     * @param tree Family tree you want to get results from.
+     */
     public Expert(NTree tree) {
         this.tree = tree;
 
@@ -66,7 +80,7 @@ public class Expert {
      * @param a child nodes
      * @return parent nodes
      */
-    public Collection<Node> parentOf(Collection<Node> a) {
+    private Collection<Node> parentOf(Collection<Node> a) {
         Collection<Node> b = new HashSet<Node>();
 
         for (Node node : a) {
@@ -84,7 +98,7 @@ public class Expert {
      * @param a parent nodes
      * @return child nodes
      */
-    public Collection<Node> childrenOf(Collection<Node> a) {
+    private Collection<Node> childrenOf(Collection<Node> a) {
         Collection<Node> b = new HashSet<Node>();
 
         for (Node node : a) {
@@ -101,7 +115,7 @@ public class Expert {
      * @param a source nodes
      * @param b nodes to exclude from a
      */
-    public Collection<Node> notThis(Collection<Node> a, Collection<Node> b) {
+    private Collection<Node> notThis(Collection<Node> a, Collection<Node> b) {
         Collection<Node> newSet = new HashSet<Node>();
         for (Node node : a) {
             if (!(b.contains(node)))
@@ -157,7 +171,7 @@ public class Expert {
      * @return string array. Indexes are described by the Expert
      * constants POS_*.
      */
-    public String[] getRelationInfo(int id) {
+    private String[] getRelationInfo(int id) {
         String[] result = new String[5];
         result[POS_ID] = Integer.toString(id);
         result[POS_DESC] = relations[id].desc;
@@ -184,8 +198,8 @@ public class Expert {
     /**
      * Searches for some person and returns their relation.
      * 
-     * @param from
-     * @param target
+     * @param from Person to search from.
+     * @param target Person to search for.
      * @return result of search
      */
     public String findPerson(Node from, Node target) {
@@ -250,12 +264,9 @@ public class Expert {
     /**
      * Finds all persons in specified relation.
      * 
-     * @param from
-     *            Person to search from.
-     * @param rel
-     *            wanted relation
-     * @param male
-     *            is male or female
+     * @param from Person to search from.
+     * @param rel wanted relation
+     * @param male is male or female
      * @return LinkedList of person instances
      */
     public Collection<Node> findPersons(Node from, int rel, boolean male) {
@@ -308,12 +319,12 @@ public class Expert {
     }
 
     /**
-     * 
-     * @param from
-     * @param target
-     * @param rel
+     * @param from From which person is done an comparison.
+     * @param target To which person is done an comparison.
+     * @param rel relation id we want to test
      * @param male true if I look for male, false if it is female
-     * @return true if found the person and the false in other case
+     * 
+     * @return true if it founds the person and the false in the other case
      */
     public boolean testRelation(Node from, Node target, int rel, boolean male) {
         boolean result = false;
@@ -335,7 +346,6 @@ public class Expert {
             case 'P':
                 first = (HashSet<Node>) terms.get(new Character(val
                         .charAt(++symIt)));
-                // TODO: check if doesn't have any parents. NULL pointer
                 test = parentOf(first);
                 if (test.contains(tree.getId(0)) || test == null)
                     return false;
@@ -375,9 +385,9 @@ public class Expert {
 
     /**
      * Get your blood line. They are all parents of parents and so on.
-     * @param from
+     * @param from Person to search from.
      * @param deep how deep you want to search
-     * @return
+     * @return all persons that are my ascendants
      */
     public Collection<Node> bloodline(Node from, int deep) {
         Collection<Node> res = new HashSet<Node>();

@@ -4,6 +4,9 @@
  * 
  * Written by Zdeněk Janeček, 2013
  * Share it freely under conditions of GNU GPL v3
+ * 
+ * version 1.0
+ * last change in May 2013
  */
 
 package kiv.janecekz;

@@ -4,6 +4,9 @@
  * 
  * Written by Zdeněk Janeček, 2013
  * Share it freely under conditions of GNU GPL v3
+ * 
+ * version 0.92
+ * last change in May 2013
  */
 
 package kiv.janecekz;
@@ -13,6 +16,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 
+/**
+ * This the main class that is getting input from the user and
+ * calling Expert class.
+ * 
+ * @author Zdeněk Janeček
+ */
 public class Starter {
     private static BufferedReader br;
     private static NTree familyTree;
@@ -22,6 +31,10 @@ public class Starter {
     private static boolean runnning = true;
     private static final char ESC = 27;
 
+    /**
+     * Exits the program and close all opened streams.
+     * @param s Error message
+     */
     public static void dieWithError(String s) {
         System.out.println(s);
         try {
@@ -72,7 +85,7 @@ public class Starter {
                 male = r[1] == 0 ? false : true;
                 printTitle(title
                         + " : "
-                        + ex.getRelationInfo(r[0])[male ? Expert.POS_MALENAME
+                        + ex.getRelations()[r[0]][male ? Expert.POS_MALENAME
                                 : Expert.POS_FEMALENAME]);
                 res = ex.findPersons(from, r[0], male).toString();
                 break;
@@ -84,7 +97,7 @@ public class Starter {
                 male = r[1] == 0 ? false : true;
                 printTitle(title
                         + " "
-                        + ex.getRelationInfo(r[0])[male ? Expert.POS_MALENAME
+                        + ex.getRelations()[r[0]][male ? Expert.POS_MALENAME
                                 : Expert.POS_FEMALENAME]);
                 target = promptNode();
                 printTitle(title + " " + target.getName());
@@ -140,6 +153,7 @@ public class Starter {
         Node res = null;
         try {
             System.out.println("Zadejte id osoby: ");
+            System.out.print(">> ");
             int ch = Integer.parseInt(br.readLine());
             res = familyTree.getId(ch);
 
@@ -171,7 +185,8 @@ public class Starter {
             boolean found = false;
 
             do {
-                System.out.print("\nZadejte vztah: ");
+                System.out.println("\nZadejte vztah: ");
+                System.out.print(">> ");
                 String ch = br.readLine();
 
                 int male = 0;
@@ -221,8 +236,7 @@ public class Starter {
     /**
      * For example [aa,bb,cc] returns {"aa", "bb", "cc"}
      * 
-     * @param s
-     *            String to tokenize
+     * @param s String to tokenize
      * @return array with result
      */
     public static String[] getTokens(String s) {

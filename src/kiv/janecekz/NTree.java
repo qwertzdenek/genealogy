@@ -4,6 +4,9 @@
  * 
  * Written by Zdeněk Janeček, 2013
  * Share it freely under conditions of GNU GPL v3
+ * 
+ * version 1.0
+ * last change in May 2013
  */
 
 package kiv.janecekz;
@@ -60,8 +63,6 @@ public class NTree {
                 curLine = input.readLine().trim();
                 if ((curLine.charAt(0) != '[')
                         || (curLine.charAt(curLine.length() - 1) != ']')) {
-                    // TODO: be angry on user
-
                     continue;
                 }
 
@@ -70,21 +71,9 @@ public class NTree {
 
             input.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Starter.dieWithError("(EE) chyba při načítání rodinného stromu");
         }
 
-        /*
-        System.out.println("Načteno: ");
-        for (Node nod : instances) {
-            System.out.println(nod.toString());
-        }
-
-        System.out.println("\nPotomci Super Matky: ");
-        for (Node nod : instances[0].listOfChilds()) {
-            System.out.println(nod.toString());
-        }
-         */
         return true;
     }
 
