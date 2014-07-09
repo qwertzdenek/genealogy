@@ -1,20 +1,17 @@
 /*
  * Genealogy expert system.
- * Semestral work for the University of West Bohemia.
  * 
- * Written by Zdeněk Janeček, 2013
+ * Written by Zdeněk Janeček, 2014
  * Share it freely under conditions of GNU GPL v3
  * 
- * version 1.0
- * last change in May 2013
+ * version 2.0
+ * last change in June 2014
  */
 
 package kiv.janecekz;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.awt.Graphics;
+import java.io.File;
 
 /**
  * Utility class for the tasks with the N-tree. Imports external data file and
@@ -30,139 +27,58 @@ public class NTree {
     private static final int POS_MALE = 4;
     private static final int POS_PARTNER = 5;
 
-    private Node[] instances;
+    public Node[] nodes;
+    NTreeDraw drawer;
 
-    public NTree(String file) {
-        boolean res = processInput(file);
-        
-        if (!res)
-            System.out.println("Došlo k chybě při čtení souboru "+file);
-    }
-    
-    private boolean processInput(String file) {
-        BufferedReader input = null;
-        try {
-            input = new BufferedReader(new FileReader(file));
-        } catch (FileNotFoundException e) {
-            System.out.println("Soubor nenalezen!");
-            return false;
+    public NTree(File file) throws Exception {
+        drawer = new NTreeDraw(this);
+
+        DataLoader dl = new DataLoader(file);
+        int count = dl.getCount();
+        nodes = new Node[count + 1];
+
+        nodes[0] = new Node(0, "Super Mother", Node.NONE, Node.NONE, false,
+                Node.NONE, this);
+
+        String[] e;
+        int id = 1;
+        while ((e = dl.next()) != null) {
+            id = Integer.parseInt(e[POS_ID]);
+
+            if (id >= nodes.length)
+                throw new Exception("File not consistent");
+
+            nodes[id] = new Node(id, e[POS_NAME], e[POS_MOTHER].toLowerCase()
+                    .equals("nil") ? Node.NONE
+                    : Integer.parseInt(e[POS_MOTHER]), e[POS_FATHER]
+                    .toLowerCase().equals("nil") ? Node.NONE
+                    : Integer.parseInt(e[POS_FATHER]),
+                    Boolean.parseBoolean(e[POS_MALE]), e[POS_PARTNER]
+                            .toLowerCase().equals("nil") ? Node.NONE
+                            : Integer.parseInt(e[POS_PARTNER]), this);
         }
 
-        String curLine;
-        try {
-            // We add one virtual nod to save end of line.
-            int count = Integer.parseInt(input.readLine().trim()) + 1;
+        Node n;
+        for (int j = 1; j < nodes.length; j++) {
+            if (nodes[j] == null)
+                throw new Exception("File not consistent");
 
-            // first line shows count of input data
-            instances = new Node[count];
+            n = nodes[j].getMother();
+            if (n != null)
+                n.addChild(nodes[j]);
+            else
+                nodes[0].addChild(nodes[j]);
 
-            // virtual root node
-            instances[0] = new Node(0, "Super Mother", null, null, false, null, this);
-
-            for (int i = 1; i < count; i++) {
-                curLine = input.readLine().trim();
-                if ((curLine.charAt(0) != '[')
-                        || (curLine.charAt(curLine.length() - 1) != ']')) {
-                    continue;
-                }
-
-                createNod(curLine);
-            }
-
-            input.close();
-        } catch (IOException e) {
-            Starter.dieWithError("(EE) chyba při načítání rodinného stromu");
-        }
-
-        return true;
-    }
-
-    public Node getId(int id) {
-        if (id >= 0 && id < instances.length)
-            return instances[id];
-        else
-            return null;
-    }
-
-    public int size() {
-        return instances.length;
-    }
-    
-    /**
-     * Format is [id, name, mother, father, male, partner]
-     * 
-     * @param s
-     * @return
-     */
-    private void createNod(String s) {
-        Node newNod;
-
-        int id;
-        String name;
-        Node mother = null;
-        Node father = null;
-        boolean male;
-        Node partner = null;
-
-        String[] tokens = Starter.getTokens(s);
-
-        male = Boolean.parseBoolean(tokens[POS_MALE]);
-        name = tokens[POS_NAME];
-        id = Integer.parseInt(tokens[POS_ID]);
-
-        for (int i : new int[] { POS_MOTHER, POS_FATHER, POS_PARTNER }) {
-            int index = tokens[i].equals("nil") ? 0 : Integer
-                    .parseInt(tokens[i]);
-
-            switch (i) {
-            case POS_MOTHER:
-                if (instances[index] == null) {
-                    mother = new Node(index, null, null, null, false, null, this);
-                    instances[index] = mother;
-                } else {
-                    mother = instances[index];
-                }
-
-                mother.addChild(id);
-                break;
-            case POS_FATHER:
-                if (index > 0) {
-                    if (instances[index] == null) {
-                        father = new Node(index, null, null, null, true, null, this);
-                        instances[index] = father;
-                    } else
-                        father = instances[index];
-
-                    father.addChild(id);
-                }
-                break;
-
-            case POS_PARTNER:
-                if (index > 0) {
-                    if (instances[index] == null) {
-                        partner = new Node(index, null, null, null, !male, null, this);
-                        instances[index] = partner;
-                    } else
-                        partner = instances[index];
-                }
-                break;
-
-            default:
-
-                break;
-            }
-        }
-
-        if (instances[id] == null) {
-            newNod = new Node(id, name, mother, father, male, partner, this);
-            instances[id] = newNod;
-        } else {
-            newNod = instances[id];
-            newNod.updateInfo(name, mother, father, partner);
+            n = nodes[j].getFather();
+            if (n != null)
+                n.addChild(nodes[j]);
         }
     }
-    
-    public void printTree() {
-        instances[0].printPretty("", true);
+
+    public void draw(Graphics g) {
+        drawer.drawTree(g, nodes);
+
+        g.drawString("BLAH", 20, 20);
+        g.fillRect(200, 200, 200, 200);
     }
 }

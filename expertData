@@ -1,17 +1,17 @@
 8
-[0,dítě,syn,dcera]
+[0,child,son,daughter]
 Cxa
-[1,rodič,otec,matka]
+[1,parent,father,mother]
 Pxa
-[2,sourozenec,bratr,sestra]
+[2,sibling,brother,sister]
 PxaCabNbx
-[3,prarodič,dědeček,babička]
+[3,grandparent,grandpa,grandma]
 PxaPab
-[4,sourozenec rodičů,strýc,teta]
+[4,parent's sibling,uncle,aunt]
 PxaPabCbcNca
-[5,potomek sourozenců rodičů,bratranec,sestřenice]
+[5,child of parent's sibling,cousin,she cousin]
 PxaPabCbcNdaCdy
-[6,dítě mých dětí,vnuk,vnučka]
+[6,child of my child,grandson,granddaughter]
 CxaCab
-[7,potomek sourozence,synovec,neteř]
+[7,sibling's child,nephew,niece]
 PxaCabNbxCbc

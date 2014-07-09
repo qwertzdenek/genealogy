@@ -1,18 +1,18 @@
-/* 
+/*
  * Genealogy expert system.
- * Semestral work for the University of West Bohemia.
  * 
- * Written by Zdeněk Janeček, 2013
+ * Written by Zdeněk Janeček, 2014
  * Share it freely under conditions of GNU GPL v3
  * 
- * version 0.92
- * last change in May 2013
+ * version 2.0
+ * last change in June 2014
  */
+
 
 package kiv.janecekz;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
@@ -32,11 +32,9 @@ public class Expert {
     public static final int POS_FEMALENAME = 3;
     public static final int POS_RULE = 4;
 
-    private static final String EXP_DATA = "expertData";
     private static final String P = "P";
     private static final String C = "C";
 
-    private NTree tree;
     private Relation[] relations;
 
     private class Relation {
@@ -61,16 +59,13 @@ public class Expert {
      * 
      * @param tree Family tree you want to get results from.
      */
-    public Expert(NTree tree) {
-        this.tree = tree;
-
+    public Expert(File expertFile) {
         try {
-            processExpInput(EXP_DATA);
-        } catch (FileNotFoundException e) {
-            Starter.dieWithError("(EE) Soubor nenalezen");
-        } catch (IOException e) {
-            Starter.dieWithError("(EE) Chyba vstupu výstupu");
-        }
+	    processExpInput(expertFile);
+	} catch (IOException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
     }
 
     /**
@@ -80,7 +75,7 @@ public class Expert {
      * @param a child nodes
      * @return parent nodes
      */
-    private Collection<Node> parentOf(Collection<Node> a) {
+    private Collection<Node> parentOf(Collection<Node> a, NTree tree) {
         Collection<Node> b = new HashSet<Node>();
 
         for (Node node : a) {
@@ -102,7 +97,7 @@ public class Expert {
         Collection<Node> b = new HashSet<Node>();
 
         for (Node node : a) {
-            b.addAll(node.listOfChilds());
+            b.addAll(node.getChilds());
         }
 
         return b;
@@ -204,10 +199,10 @@ public class Expert {
      */
     public String findPerson(Node from, Node target) {
         if (from == null || target == null) {
-            return "(II) Nemůžu pokračovat";
+            return "(II) Can't continue to find person";
         }
 
-        String result = "Nenalezen";
+        String result = "Not found";
         LinkedList<Node> q = new LinkedList<Node>();
         boolean[] visited = new boolean[tree.size()];
 
@@ -225,18 +220,20 @@ public class Expert {
             if (v.equals(target)) {
                 int id = getRealationId(paths[v.getId()]);
                 if (id == -1) {
-                    result = "Nenalezen vztah";
+                    result = "Relation not found";
                 } else {
                     if (v.isMale())
-                        result = "Nalezen " + v.getName() + " ve vztahu "
+                        result = "Found " + v.getName() + " in relation: "
                                 + relations[id].maleName;
                     else
-                        result = "Nalezena " + v.getName() + " ve vztahu "
+                        result = "Found " + v.getName() + " in relation "
                                 + relations[id].femaleName;
                 }
+                
+                break;
             }
 
-            for (Node w : v.listOfChilds()) {
+            for (Node w : v.getChilds()) {
                 if (!visited[w.getId()]) {
                     visited[w.getId()] = true;
                     paths[w.getId()] = paths[v.getId()] + C;
@@ -293,7 +290,7 @@ public class Expert {
                 result.add(v);
             }
 
-            for (Node w : v.listOfChilds()) {
+            for (Node w : v.getChilds()) {
                 if (!visited[w.getId()]) {
                     visited[w.getId()] = true;
                     paths[w.getId()] = paths[v.getId()] + C;
@@ -431,11 +428,10 @@ public class Expert {
         return res;
     }
 
-    private void processExpInput(String file) throws FileNotFoundException,
-            IOException {
+    private void processExpInput(File file) throws IOException {
         BufferedReader input = null;
         input = new BufferedReader(new FileReader(file));
-
+        
         String curLine;
 
         // We add one virtual nod to save end of line.
@@ -446,7 +442,7 @@ public class Expert {
 
         for (int i = 0; i < count; i++) {
             curLine = input.readLine();
-            String[] values = Starter.getTokens(curLine);
+            String[] values = DataManipulation.getTokens(curLine);
             int id = Integer.parseInt(values[POS_ID]);
 
             Relation onerel = new Relation(id, values[POS_DESC],
