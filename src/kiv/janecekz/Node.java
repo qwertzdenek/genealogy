@@ -10,7 +10,7 @@
 
 package kiv.janecekz;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Node {
@@ -44,7 +44,7 @@ public class Node {
         if (partner == NONE)
             return null;
         else
-            return tree.nodes[partner];
+            return tree.nodes.get(partner);
     }
 
     public String getName() {
@@ -59,14 +59,14 @@ public class Node {
         if (mother == NONE)
             return null;
         else
-            return tree.nodes[mother];
+            return tree.nodes.get(mother);
     }
 
     public Node getFather() {
         if (father == NONE)
             return null;
         else
-            return tree.nodes[father];
+            return tree.nodes.get(father);
     }
 
     public boolean isMale() {
@@ -81,12 +81,34 @@ public class Node {
         childrens.add(id);
     }
 
-    public Collection<Node> getChilds() {
-        return childrens;
+    public ArrayList<Node> getChilds() {
+        return new ArrayList<Node>(childrens);
     }
 
     @Override
     public String toString() {
         return "Node " + id;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + id;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Node other = (Node) obj;
+        if (id != other.id)
+            return false;
+        return true;
     }
 }

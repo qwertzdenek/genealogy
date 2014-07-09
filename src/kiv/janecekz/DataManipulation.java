@@ -10,6 +10,7 @@
 
 package kiv.janecekz;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -54,23 +55,31 @@ public class DataManipulation {
         return list;
     }
 
-    public static void sort(Node[] el) {
+    public static void sort(Collection<Node> el) {
+        if (el.isEmpty())
+            return;
+
         Node par;
         Node tmp;
 
-        for (int i = 0; i < el.length; i++) {
-            par = el[i].getPartner();
+        if (el instanceof ArrayList<?>) {
+            ArrayList<Node> array = (ArrayList<Node>) el;
+            // Node[] flags = new Node;
 
-            if (par == null)
-                continue;
+            for (int i = 0; i < array.size(); i++) {
+                par = array.get(i).getPartner();
 
-            for (int j = i + 1; j < el.length; j++) {
-                if (el[j].equals(par)) {
-                    tmp = el[i + 1];
-                    el[i + 1] = el[j];
-                    el[j] = tmp;
-                    i++;
-                    break;
+                if (par == null)
+                    continue;
+
+                for (int j = i + 1; j < array.size(); j++) {
+                    if (array.get(j).equals(par)) {
+                        tmp = array.get(i + 1);
+                        array.set(i + 1, array.get(j));
+                        array.set(j, tmp);
+                        i++;
+                        break;
+                    }
                 }
             }
         }

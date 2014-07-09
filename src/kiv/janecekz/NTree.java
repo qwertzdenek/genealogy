@@ -12,6 +12,7 @@ package kiv.janecekz;
 
 import java.awt.Graphics;
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Utility class for the tasks with the N-tree. Imports external data file and
@@ -27,58 +28,54 @@ public class NTree {
     private static final int POS_MALE = 4;
     private static final int POS_PARTNER = 5;
 
-    public Node[] nodes;
-    NTreeDraw drawer;
+    public ArrayList<Node> nodes;
 
     public NTree(File file) throws Exception {
-        drawer = new NTreeDraw(this);
-
         DataLoader dl = new DataLoader(file);
         int count = dl.getCount();
-        nodes = new Node[count + 1];
+        nodes = new ArrayList<Node>(count + 1);
 
-        nodes[0] = new Node(0, "Super Mother", Node.NONE, Node.NONE, false,
-                Node.NONE, this);
+        nodes.add(new Node(0, "Super Mother", Node.NONE, Node.NONE, false,
+                Node.NONE, this));
 
         String[] e;
         int id = 1;
         while ((e = dl.next()) != null) {
             id = Integer.parseInt(e[POS_ID]);
 
-            if (id >= nodes.length)
+            if (id >= count + 1)
                 throw new Exception("File not consistent");
 
-            nodes[id] = new Node(id, e[POS_NAME], e[POS_MOTHER].toLowerCase()
+            nodes.add(id, new Node(id, e[POS_NAME], e[POS_MOTHER].toLowerCase()
                     .equals("nil") ? Node.NONE
                     : Integer.parseInt(e[POS_MOTHER]), e[POS_FATHER]
                     .toLowerCase().equals("nil") ? Node.NONE
                     : Integer.parseInt(e[POS_FATHER]),
                     Boolean.parseBoolean(e[POS_MALE]), e[POS_PARTNER]
                             .toLowerCase().equals("nil") ? Node.NONE
-                            : Integer.parseInt(e[POS_PARTNER]), this);
+                            : Integer.parseInt(e[POS_PARTNER]), this));
         }
 
         Node n;
-        for (int j = 1; j < nodes.length; j++) {
-            if (nodes[j] == null)
+        for (int j = 1; j < nodes.size(); j++) {
+            if (nodes.get(j) == null)
                 throw new Exception("File not consistent");
 
-            n = nodes[j].getMother();
+            n = nodes.get(j).getMother();
             if (n != null)
-                n.addChild(nodes[j]);
+                n.addChild(nodes.get(j));
             else
-                nodes[0].addChild(nodes[j]);
+                nodes.get(0).addChild(nodes.get(j));
 
-            n = nodes[j].getFather();
+            n = nodes.get(j).getFather();
             if (n != null)
-                n.addChild(nodes[j]);
+                n.addChild((nodes.get(j)));
         }
     }
 
     public void draw(Graphics g) {
-        drawer.drawTree(g, nodes);
+        NTreeDraw.drawTree(g, nodes.get(0).getChilds(), 0, 10);
 
-        g.drawString("BLAH", 20, 20);
-        g.fillRect(200, 200, 200, 200);
+        g.drawString("Size is " + nodes.size(), 10, 20);
     }
 }

@@ -50,6 +50,7 @@ public class Starter extends JPanel implements ActionListener {
     private static NTree familyTree;
     // private static Expert ex;
     private DefaultListModel<String> listModel;
+    private Panel2 chart;
 
     private class Panel2 extends JPanel {
         Panel2() {
@@ -81,7 +82,7 @@ public class Starter extends JPanel implements ActionListener {
     }
 
     public Starter() {
-        Panel2 chart = new Panel2();
+        chart = new Panel2();
         chart.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -125,7 +126,6 @@ public class Starter extends JPanel implements ActionListener {
                 code = chooser.showOpenDialog(getRootPane());
                 if (code == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = chooser.getSelectedFile();
-                    System.out.println(selectedFile.getCanonicalPath());
 
                     // ex = new Expert(selectedFile);
 
@@ -136,10 +136,9 @@ public class Starter extends JPanel implements ActionListener {
                 code = chooser.showOpenDialog(getRootPane());
                 if (code == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = chooser.getSelectedFile();
-                    System.out.println(selectedFile.getCanonicalPath());
 
                     familyTree = new NTree(selectedFile);
-
+                    chart.repaint();
                 }
                 break;
             default:

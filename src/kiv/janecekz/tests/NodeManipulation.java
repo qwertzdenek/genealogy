@@ -11,7 +11,7 @@
 package kiv.janecekz.tests;
 
 import java.io.File;
-import java.util.Iterator;
+import java.util.ArrayList;
 
 import kiv.janecekz.NTree;
 import kiv.janecekz.Node;
@@ -48,10 +48,10 @@ public class NodeManipulation {
             node.addChild(test[i]);
         }
 
-        Iterator<Node> it = node.getChilds().iterator();
+        ArrayList<Node> ch = node.getChilds();
 
         for (int i = 0; i < test.length; i++) {
-            Assert.assertEquals(test[i], it.next());
+            Assert.assertEquals(test[i], ch.get(i));
         }
     }
 }
