@@ -74,7 +74,7 @@ public class NTree {
     }
 
     public void draw(Graphics g) {
-        NTreeDraw.drawTree(g, nodes.get(0).getChilds(), 0, 10);
+        NTreeDraw.drawTree(g, nodes.get(0).getChilds());
 
         g.drawString("Size is " + nodes.size(), 10, 20);
     }

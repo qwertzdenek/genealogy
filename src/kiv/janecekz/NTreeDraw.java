@@ -12,50 +12,84 @@ package kiv.janecekz;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 
 public class NTreeDraw {
     private static final int WIDTH = 50;
-    private static final int HEIGHT = 25;
+    private static final int HEIGHT = 26;
     private static final int SEP = 20;
+    private static final int MOVE = WIDTH + SEP;
 
-    public static int drawTree(Graphics g, Collection<Node> tree, int level,
-            int startx) {
-        if (tree.isEmpty())
-            return 0;
+    public static void drawTree(Graphics g, ArrayList<Node> nodes) {
+        int x = 0, y = 25;
 
-        ArrayList<Node> nodes = (ArrayList<Node>) tree;
+        int[] parentPos = new int[nodes.get(0).getTree().nodes.size()];
+        int[] siblingCount = new int[nodes.get(0).getTree().nodes.size()];
+        
+        ArrayList<Node> newNodes = new ArrayList<Node>();
+        ArrayList<Node> swapPointer;
 
         DataManipulation.sort(nodes);
 
-        int x = startx;
-        int y = level * (HEIGHT + SEP) + SEP;
-        for (int i = 0; i < nodes.size(); i++) {
-            if (nodes.get(i).getPartner() == null) {
-                g.drawString(Integer.toString(nodes.get(i).getId()), x + WIDTH
-                        / 2, y + HEIGHT / 2 + 5);
+        int i = 0;
+        while (!nodes.isEmpty()) {
+            Node person = nodes.get(i);
+
+            x = parentPos[person.getId()] + siblingCount[person.getId()] * MOVE;
+            
+            if (person.getPartner() == null) { // doesn't have a partner
+                
+                
+                g.drawString(Integer.toString(person.getId()), x + WIDTH / 2, y
+                        + HEIGHT / 2 + 5);
                 g.drawRect(x, y, WIDTH, HEIGHT);
 
-                x += WIDTH + SEP;
-            } else {
-                // draw subnodes first
-                int ch = NTreeDraw.drawTree(g, nodes.get(i).getChilds(),
-                        level + 1, startx);
+                if (i < nodes.size() - 1) {
+                    g.drawLine(x + WIDTH, y + 13, x + MOVE, y + 13);
+                }
 
-                g.drawString(Integer.toString(nodes.get(i).getId()), x + WIDTH
-                        / 2, y + HEIGHT / 2 + 5);
+//                x += MOVE;
+            } else { // node has a partner
+                g.drawString(Integer.toString(person.getId()), x + WIDTH / 2,
+                        y + HEIGHT / 2 + 5);
                 g.drawRect(x, y, WIDTH, HEIGHT);
 
-                g.drawString(Integer.toString(nodes.get(i + 1).getId()), x
-                        + WIDTH / 2 + WIDTH + SEP, y + HEIGHT / 2 + 5);
-                g.drawRect(x + WIDTH + SEP, y, WIDTH, HEIGHT);
+                g.drawString(Integer.toString(person.getPartner().getId()),
+                        x + MOVE + WIDTH / 2, y + HEIGHT / 2 + 5);
+                g.drawRect(x + MOVE, y, WIDTH, HEIGHT);
 
-                x += Math.max(2, ch) * (WIDTH + SEP);
+                g.drawLine(x + WIDTH, y + 10, x + MOVE, y + 10);
+                g.drawLine(x + WIDTH, y + 16, x + MOVE, y + 16);
 
+                // prepare next level
+                ArrayList<Node> childs = person.getChilds(); 
+                newNodes.addAll(childs);
+
+                int pos = 0;
+                for (Node node : childs) {
+                    parentPos[node.getId()] = x;
+                    siblingCount[node.getId()] = pos++;
+                }
+
+                x += Math.max(2, person.childsCount()) * MOVE;
                 i++; // skip partner
             }
-        }
 
-        return nodes.size();
+            i++;
+
+            // create next level
+            if (i == nodes.size()) {
+                y += HEIGHT + SEP;
+                i = 0;
+
+                nodes.clear();
+                
+                swapPointer = nodes;
+                nodes = newNodes;
+                newNodes = swapPointer;
+
+                DataManipulation.sort(nodes);
+            }
+        }
     }
 }

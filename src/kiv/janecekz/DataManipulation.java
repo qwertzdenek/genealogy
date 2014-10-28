@@ -55,33 +55,39 @@ public class DataManipulation {
         return list;
     }
 
-    public static void sort(Collection<Node> el) {
+    public static ArrayList<Node> sort(Collection<Node> el) {
         if (el.isEmpty())
-            return;
+            return null;
 
+        ArrayList<Node> array;
+        if (el instanceof ArrayList<?>) {
+            array = (ArrayList<Node>) el;
+        } else if (el instanceof LinkedList<?>) {
+            array = new ArrayList<>(el);
+        } else {
+            return null;
+        }
+        
         Node par;
         Node tmp;
+        
+        for (int i = 0; i < array.size(); i++) {
+            par = array.get(i).getPartner();
 
-        if (el instanceof ArrayList<?>) {
-            ArrayList<Node> array = (ArrayList<Node>) el;
-            // Node[] flags = new Node;
+            if (par == null)
+                continue;
 
-            for (int i = 0; i < array.size(); i++) {
-                par = array.get(i).getPartner();
-
-                if (par == null)
-                    continue;
-
-                for (int j = i + 1; j < array.size(); j++) {
-                    if (array.get(j).equals(par)) {
-                        tmp = array.get(i + 1);
-                        array.set(i + 1, array.get(j));
-                        array.set(j, tmp);
-                        i++;
-                        break;
-                    }
+            for (int j = i + 1; j < array.size(); j++) {
+                if (array.get(j).equals(par)) {
+                    tmp = array.get(i + 1);
+                    array.set(i + 1, array.get(j));
+                    array.set(j, tmp);
+                    i++;
+                    break;
                 }
             }
         }
+        
+        return array;
     }
 }

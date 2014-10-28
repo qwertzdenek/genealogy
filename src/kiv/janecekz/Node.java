@@ -81,10 +81,14 @@ public class Node {
         childrens.add(id);
     }
 
-    public ArrayList<Node> getChilds() {
+    public ArrayList<Node> getChilds() { // FIXME: it is really necessary
         return new ArrayList<Node>(childrens);
     }
 
+    public int childsCount() {
+        return childrens.size();
+    }
+    
     @Override
     public String toString() {
         return "Node " + id;
